@@ -16,7 +16,7 @@ type CronRange struct {
 	schedule       cron.Schedule
 }
 
-func (cr *CronRange) String() string {
+func (cr CronRange) String() string {
 	sb := strings.Builder{}
 	if cr.duration > 0 {
 		sb.WriteString(fmt.Sprintf("DR=%d; ", cr.duration/time.Minute))
@@ -34,7 +34,7 @@ type TimeRange struct {
 	End   time.Time
 }
 
-func (tr *TimeRange) String() string {
+func (tr TimeRange) String() string {
 	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
 }
 
