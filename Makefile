@@ -6,7 +6,7 @@ GOTEST=$(GOCMD) test
 GODOC=$(GOCMD) doc
 GOGET=$(GOCMD) get
 
-all: build test cover bench doc
+all: fmt build test cover bench doc
 ci: build test cover bench
 doc:
 	$(GODOC) -all .
