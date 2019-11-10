@@ -28,18 +28,24 @@ type TimeRange struct {
 }
 
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
+	// Precondition checks
 	if durationMin <= 0 {
 		err = errors.New("duration should be positive")
 		return
 	}
 
+	// Clean up string parameters
+	cronExpr, timeZone = strings.TrimSpace(cronExpr), strings.TrimSpace(timeZone)
+
+	// Append timezone into cron spec if necessary
 	cronSpec := cronExpr
-	if strings.ToLower(strings.TrimSpace(timeZone)) == "local" {
+	if strings.ToLower(timeZone) == "local" {
 		timeZone = ""
 	} else if len(timeZone) > 0 {
 		cronSpec = fmt.Sprintf("CRON_TZ=%s %s", timeZone, cronExpr)
 	}
 
+	// Validate & retrieve crontab schedule
 	var schedule cron.Schedule
 	if schedule, err = cronParser.Parse(cronSpec); err != nil {
 		return

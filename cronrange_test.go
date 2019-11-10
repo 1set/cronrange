@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+var (
+	exprEveryMin    = "* * * * *"
+	timeZoneBangkok = "Asia/Bangkok"
+)
+
 func TestNew(t *testing.T) {
 	type args struct {
 		cronExpr    string
@@ -19,12 +24,12 @@ func TestNew(t *testing.T) {
 		{"Empty cronExpr", args{"", "", 5}, false, true},
 		{"Invalid cronExpr", args{"h e l l o", "", 5}, false, true},
 		{"Incomplete cronExpr", args{"* * * *", "", 5}, false, true},
-		{"Nonexistent timezone", args{"* * * * *", "Mars", 5}, false, true},
-		{"Zero durationMin", args{"* * * * *", "", 0}, false, true},
-		{"Normal without timezone", args{"* * * * *", "", 5}, true, false},
-		{"Normal with local timezone", args{"* * * * *", " Local ", 5}, true, false},
-		{"Normal with timezone", args{"* * * * *", "Asia/Bangkok", 5}, true, false},
-		{"Normal with large duration", args{"* * * * *", "Asia/Bangkok", 5259000}, true, false},
+		{"Nonexistent timezone", args{exprEveryMin, "Mars", 5}, false, true},
+		{"Zero durationMin", args{exprEveryMin, "", 0}, false, true},
+		{"Normal without timezone", args{exprEveryMin, "", 5}, true, false},
+		{"Normal with local timezone", args{exprEveryMin, " Local ", 5}, true, false},
+		{"Normal with timezone", args{exprEveryMin, timeZoneBangkok, 5}, true, false},
+		{"Normal with large duration", args{exprEveryMin, timeZoneBangkok, 5259000}, true, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -37,5 +42,11 @@ func TestNew(t *testing.T) {
 				t.Errorf("New() gotCr = %v, wantCr %v", gotCr, tt.wantCr)
 			}
 		})
+	}
+}
+
+func BenchmarkNew(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _ = New(exprEveryMin, timeZoneBangkok, 10)
 	}
 }
