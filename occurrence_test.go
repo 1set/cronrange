@@ -1,8 +1,6 @@
 package cronrange
 
 import (
-	"encoding/json"
-	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -14,11 +12,6 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	crFirstDayEachMonth, _ := New("0 0 1 * *", "", 1440)
 	crFirstHourFeb29, _ := New("0 0 29 2 *", "", 60)
 	crFirstHourFeb28OrSun, _ := New("0 0 28 2 0", "", 60)
-
-	data, err := json.Marshal(crFirstHourFeb28OrSun)
-	fmt.Println(string(data))
-	fmt.Println(err)
-
 	type args struct {
 		t     time.Time
 		count int
