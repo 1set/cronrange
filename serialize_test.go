@@ -58,7 +58,7 @@ func TestCronRange_String(t *testing.T) {
 	}
 }
 
-func BenchmarkString(b *testing.B) {
+func BenchmarkCronRange_String(b *testing.B) {
 	cr, _ := New(exprEveryMin, timeZoneBangkok, 10)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -120,5 +120,13 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 				t.Errorf("MarshalJSON() got = %v, want %q", gotJ, tt.wantJ)
 			}
 		})
+	}
+}
+
+func BenchmarkCronRange_MarshalJSON(b *testing.B) {
+	cr, _ := New(exprEveryMin, timeZoneBangkok, 10)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = cr.MarshalJSON()
 	}
 }
