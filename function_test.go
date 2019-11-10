@@ -10,6 +10,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	var crNil *CronRange
 	crEmpty := &CronRange{}
 	crFirstDayEachMonth, _ := New("0 0 1 * *", "", 1440)
+	crFirstHourFeb29, _ := New("0 0 29 2 *", "", 60)
 	type args struct {
 		t     time.Time
 		count int
@@ -60,6 +61,16 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 				{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 1, 2, 0, 0, 0, 0, time.Local)},
 				{time.Date(2019, 2, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 2, 2, 0, 0, 0, 0, time.Local)},
 				{time.Date(2019, 3, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 3, 2, 0, 0, 0, 0, time.Local)},
+			},
+			false,
+		},
+		{"first hour of feb 29 since 2012",
+			crFirstHourFeb29,
+			args{time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local), 3},
+			[]TimeRange{
+				{time.Date(2012, 2, 29, 0, 0, 0, 0, time.Local), time.Date(2012, 2, 29, 1, 0, 0, 0, time.Local)},
+				{time.Date(2016, 2, 29, 0, 0, 0, 0, time.Local), time.Date(2016, 2, 29, 1, 0, 0, 0, time.Local)},
+				{time.Date(2020, 2, 29, 0, 0, 0, 0, time.Local), time.Date(2020, 2, 29, 1, 0, 0, 0, time.Local)},
 			},
 			false,
 		},
