@@ -15,6 +15,7 @@ var (
 	cronParser      = cron.NewParser(cronParseOption)
 )
 
+// CronRange consists of cron expression along with time zone and duration info.
 type CronRange struct {
 	cronExpression string
 	timeZone       string
@@ -22,6 +23,7 @@ type CronRange struct {
 	schedule       cron.Schedule
 }
 
+// TimeRange represents a time range between starting time and ending time.
 type TimeRange struct {
 	Start time.Time
 	End   time.Time

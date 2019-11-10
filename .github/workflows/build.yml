@@ -34,3 +34,9 @@ jobs:
       shell: bash
       run: |
         make ci
+
+    - name: Upload report to Codecov
+      uses: codecov/codecov-action@v1.0.3
+      with:
+        token: ${{secrets.codecov_token}}
+        file: ./coverage.out
