@@ -27,6 +27,7 @@ type TimeRange struct {
 	End   time.Time
 }
 
+// New returns a CronRange instance with given config. `timeZone` can be empty for local time zone.
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
 	// Precondition checks
 	if durationMin <= 0 {
@@ -37,7 +38,7 @@ func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err erro
 	// Clean up string parameters
 	cronExpr, timeZone = strings.TrimSpace(cronExpr), strings.TrimSpace(timeZone)
 
-	// Append timezone into cron spec if necessary
+	// Append time zone into cron spec if necessary
 	cronSpec := cronExpr
 	if strings.ToLower(timeZone) == "local" {
 		timeZone = ""
