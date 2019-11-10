@@ -23,6 +23,18 @@ type CronRange struct {
 	schedule       cron.Schedule
 }
 
+func (cr *CronRange) String() string {
+	sb := strings.Builder{}
+	if cr.duration > 0 {
+		sb.WriteString(fmt.Sprintf("DR=%d; ", cr.duration/time.Minute))
+	}
+	if len(cr.timeZone) > 0 {
+		sb.WriteString(fmt.Sprintf("TZ=%s; ", cr.timeZone))
+	}
+	sb.WriteString(cr.cronExpression)
+	return sb.String()
+}
+
 // TimeRange represents a time range between starting time and ending time.
 type TimeRange struct {
 	Start time.Time
