@@ -1,6 +1,7 @@
 package cronrange
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -20,4 +21,23 @@ func (cr CronRange) String() string {
 
 func (tr TimeRange) String() string {
 	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
+}
+
+type expressionWrapper struct {
+	Expression string `json:"expr"`
+}
+
+func (cr *CronRange) MarshalJSON() ([]byte, error) {
+	expr := cr.String()
+	if cr == nil || len(expr) == 0 {
+		return []byte("null"), nil
+	}
+
+	return json.Marshal(&expressionWrapper {
+		Expression:expr,
+	})
+}
+
+func (cr *CronRange) UnmarshalJSON([]byte) error {
+	panic("implement me")
 }
