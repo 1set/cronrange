@@ -68,7 +68,8 @@ func TestCronRange_String(t *testing.T) {
 		args args
 		want string
 	}{
-		{"nil struct", args{emptyString, emptyString, 0}, emptyString},
+		{"nil struct", args{emptyString, emptyString, 0}, "<nil>"},
+		{"empty struct", args{emptyString, emptyString, 0}, emptyString},
 		{"use string() instead of sprintf", args{exprEveryMin, emptyString, 1}, "DR=1; * * * * *"},
 		{"use instance instead of pointer", args{exprEveryMin, emptyString, 1}, "DR=1; * * * * *"},
 		{"1min duration without time zone", args{exprEveryMin, emptyString, 1}, "DR=1; * * * * *"},
@@ -81,7 +82,9 @@ func TestCronRange_String(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var cr *CronRange
-			if tt.args.cronExpr == emptyString {
+			if strings.Contains(tt.name, "nil") {
+				cr = nil
+			} else if tt.args.cronExpr == emptyString {
 				cr = &CronRange{}
 			} else {
 				var err error

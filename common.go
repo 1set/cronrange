@@ -14,7 +14,8 @@ var (
 )
 
 var (
-	errZeroDuration   = errors.New("duration should be positive")
-	errZeroOrNegCount = errors.New("count should be positive")
-	errNilCronRange   = errors.New("nil CronRange instance")
+	errZeroDuration     = errors.New("duration should be positive")
+	errZeroOrNegCount   = errors.New("count should be positive")
+	errNilCronRange     = errors.New("nil CronRange instance")
+	errInvalidCronRange = errors.New("invalid CronRange instance")
 )

@@ -5,11 +5,15 @@ import (
 )
 
 func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange, err error) {
-	if cr == nil {
-		err = errNilCronRange
-		return
-	} else if count <= 0 {
+	if count <= 0 {
 		err = errZeroOrNegCount
+	} else if cr == nil {
+		err = errNilCronRange
+	} else if cr.schedule == nil || cr.duration < 0 {
+		err = errInvalidCronRange
+	}
+
+	if err != nil {
 		return
 	}
 
