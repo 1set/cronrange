@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// NextOccurrences returns the next occurrence time ranges, later than the given time.
 func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange, err error) {
 	if count <= 0 {
 		err = errZeroOrNegCount
@@ -18,8 +19,9 @@ func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange
 	}
 
 	for curr, i := t, 0; i < count; i++ {
+		// if no occurrence is found within next five years, it returns zero, i.e. time.Time{}
 		next := cr.schedule.Next(curr)
-		if next == cronZeroTime {
+		if next.Before(curr) {
 			break
 		}
 		occur := TimeRange{

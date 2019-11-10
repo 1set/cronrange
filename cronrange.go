@@ -38,7 +38,7 @@ func (tr TimeRange) String() string {
 	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
 }
 
-// New returns a CronRange instance with given config. `timeZone` can be empty for local time zone.
+// New returns a CronRange instance with given config, timeZone can be empty for local time zone.
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
 	// Precondition checks
 	if durationMin <= 0 {
