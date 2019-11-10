@@ -88,11 +88,11 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 	}{
 		{"nil struct", args{emptyString, emptyString, 0}, `{"CR":null,"Name":"Test","Value":1111}`},
 		{"empty struct", args{emptyString, emptyString, 0}, `{"CR":null,"Name":"Test","Value":1111}`},
-		{"5min duration without time zone", args{exprEveryMin, emptyString, 5}, `{"CR":{"expr":"DR=5; * * * * *"},"Name":"Test","Value":1111}`},
-		{"10min duration with local time zone", args{exprEveryMin, "local", 10}, `{"CR":{"expr":"DR=10; * * * * *"},"Name":"Test","Value":1111}`},
-		{"10min duration with time zone", args{exprEveryMin, timeZoneBangkok, 10}, `{"CR":{"expr":"DR=10; TZ=Asia/Bangkok; * * * * *"},"Name":"Test","Value":1111}`},
-		{"every xmas morning in new york city", args{exprEveryXmasMorning, timeZoneNewYork, 240}, `{"CR":{"expr":"DR=240; TZ=America/New_York; 0 8 25 12 *"},"Name":"Test","Value":1111}`},
-		{"every new year's day in bangkok", args{exprEveryNewYear, timeZoneBangkok, 1440}, `{"CR":{"expr":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},"Name":"Test","Value":1111}`},
+		{"5min duration without time zone", args{exprEveryMin, emptyString, 5}, `{"CR":"DR=5; * * * * *","Name":"Test","Value":1111}`},
+		{"10min duration with local time zone", args{exprEveryMin, "local", 10}, `{"CR":"DR=10; * * * * *","Name":"Test","Value":1111}`},
+		{"10min duration with time zone", args{exprEveryMin, timeZoneBangkok, 10}, `{"CR":"DR=10; TZ=Asia/Bangkok; * * * * *","Name":"Test","Value":1111}`},
+		{"every xmas morning in new york city", args{exprEveryXmasMorning, timeZoneNewYork, 240}, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
+		{"every new year's day in bangkok", args{exprEveryNewYear, timeZoneBangkok, 1440}, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
