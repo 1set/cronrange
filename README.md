@@ -9,3 +9,4 @@ time range expression in cron style, or rather:
 [![GitHub Action Workflow](https://github.com/1set/cronrange/workflows/build/badge.svg)](https://github.com/1set/cronrange/actions?workflow=build)
 [![Go Report Card](https://goreportcard.com/badge/github.com/1set/cronrange)](https://goreportcard.com/report/github.com/1set/cronrange)
 [![Codecov](https://codecov.io/gh/1set/cronrange/branch/master/graph/badge.svg)](https://codecov.io/gh/1set/cronrange)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ef272059b4044252b0097270b48d5703)](https://www.codacy.com/manual/an9an63/cronrange)

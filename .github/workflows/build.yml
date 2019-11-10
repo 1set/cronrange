@@ -40,3 +40,4 @@ jobs:
       with:
         token: ${{secrets.codecov_token}}
         file: ./coverage.out
+      if: startsWith(matrix.vm-os, 'ubuntu')
