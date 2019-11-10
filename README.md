@@ -2,7 +2,7 @@
 
 time range expression in cron style, or rather:
 
-> cronrange := crontab + duration + year* + time_zone*
+> cronrange := cron + time_range
 
 [![GoDoc](https://godoc.org/github.com/1set/cronrange?status.svg)](https://godoc.org/github.com/1set/cronrange)
 [![License](https://img.shields.io/github/license/1set/cronrange)](https://github.com/1set/cronrange/blob/master/LICENSE)
