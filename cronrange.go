@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	cronZeroTime = time.Time{}
 	cronParseOption = cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow
 	cronParser      = cron.NewParser(cronParseOption)
 )
@@ -51,11 +52,15 @@ func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange
 	duration := time.Minute * time.Duration(cr.DurationMin)
 	for curr, i := t, 0; i < count; i++ {
 		next := sched.Next(curr)
+		if next == cronZeroTime {
+			break
+		}
 		occur := TimeRange{
 			Start: next,
 			End:   next.Add(duration),
 		}
 		fmt.Println(occur)
+		occurs = append(occurs, occur)
 		curr = next
 	}
 
