@@ -1,18 +1,11 @@
 package cronrange
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/robfig/cron/v3"
-)
-
-var (
-	cronZeroTime    = time.Time{}
-	cronParseOption = cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow
-	cronParser      = cron.NewParser(cronParseOption)
 )
 
 // CronRange consists of cron expression along with time zone and duration info.
@@ -23,7 +16,7 @@ type CronRange struct {
 	schedule       cron.Schedule
 }
 
-func (cr *CronRange) String() string {
+func (cr CronRange) String() string {
 	sb := strings.Builder{}
 	if cr.duration > 0 {
 		sb.WriteString(fmt.Sprintf("DR=%d; ", cr.duration/time.Minute))
@@ -41,11 +34,15 @@ type TimeRange struct {
 	End   time.Time
 }
 
-// New returns a CronRange instance with given config. `timeZone` can be empty for local time zone.
+func (tr TimeRange) String() string {
+	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
+}
+
+// New returns a CronRange instance with given config, timeZone can be empty for local time zone.
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
 	// Precondition checks
 	if durationMin <= 0 {
-		err = errors.New("duration should be positive")
+		err = errZeroDuration
 		return
 	}
 

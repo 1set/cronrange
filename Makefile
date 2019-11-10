@@ -24,4 +24,4 @@ bench:
 benchdev:
 	$(GOTEST) -parallel=8 -run="none" -benchtime="1s" -benchmem -bench=.
 cover:
-	$(GOTEST) -race -cover -covermode=atomic -coverprofile=coverage.out
+	$(GOTEST) -race -cover -covermode=atomic -coverprofile=coverage.txt
