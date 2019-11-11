@@ -121,4 +121,8 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	}
 }
 
-// TODO: Benchmark for NC
+func BenchmarkCronRange_NextOccurrences(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _ = crEvery10MinBangkok.NextOccurrences(firstLocalSec2019, 10)
+	}
+}
