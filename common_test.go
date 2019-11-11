@@ -9,6 +9,7 @@ var (
 	exprEvery10Min       = "*/10 * * * *"
 	exprEveryXmasMorning = "0 8 25 12 *"
 	exprEveryNewYear     = "0 0 1 1 *"
+	exprVeryComplicated  = "4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5"
 	timeZoneBangkok      = "Asia/Bangkok"
 	timeZoneNewYork      = "America/New_York"
 	timeZoneHonolulu     = "Pacific/Honolulu"
@@ -22,13 +23,14 @@ var (
 )
 
 var (
-	zeroTime            = time.Time{}
-	firstUtcSec2020     = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
-	firstLocalSec2012   = time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local)
-	firstLocalSec2016   = time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local)
-	firstLocalSec2019   = time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
-	firstBangkokSec2019 = time.Date(2019, 1, 1, 0, 0, 0, 0, locationBangkok)
-	lastLocalSec2018    = firstLocalSec2019.Add(-1 * time.Second)
+	zeroTime             = time.Time{}
+	firstUtcSec2020      = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	firstLocalSec2012    = time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local)
+	firstLocalSec2016    = time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local)
+	firstLocalSec2019    = time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
+	firstBangkokSec2019  = time.Date(2019, 1, 1, 0, 0, 0, 0, locationBangkok)
+	firstHonoluluSec2017 = time.Date(2017, 1, 1, 0, 0, 0, 0, locationHonolulu)
+	lastLocalSec2018     = firstLocalSec2019.Add(-1 * time.Second)
 )
 
 var (
@@ -40,6 +42,7 @@ var (
 	crEvery10MinBangkok, _         = New(exprEvery10Min, timeZoneBangkok, 10)
 	crEveryXmasMorningNYC, _       = New(exprEveryXmasMorning, timeZoneNewYork, 240)
 	crEveryNewYearsDayBangkok, _   = New(exprEveryNewYear, timeZoneBangkok, 1440)
+	crVeryComplicated, _           = New(exprVeryComplicated, timeZoneHonolulu, 1357)
 	crFirstDayEachMonth, _         = New("0 0 1 * *", "", 1440)
 	crSecondDayEachMonthBangkok, _ = New("0 0 2 * *", timeZoneBangkok, 1440)
 	crThirdDayEachMonthHonolulu, _ = New("0 0 3 * *", timeZoneHonolulu, 1440)

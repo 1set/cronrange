@@ -110,6 +110,7 @@ var deserializeTestCases = []struct {
 	{"normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false},
 	{"normal with utc time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false},
 	{"normal with honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
+	{"normal with complicated expression", "DR=5258765;   TZ=Pacific/Honolulu;   4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", "DR=5258765; TZ=Pacific/Honolulu; 4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", false},
 }
 
 func TestCronRange_UnmarshalJSON(t *testing.T) {

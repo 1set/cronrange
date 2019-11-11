@@ -25,6 +25,7 @@ func TestNew(t *testing.T) {
 		{"Normal with local time zone", args{exprEveryMin, " Local ", 5}, true, false},
 		{"Normal with time zone", args{exprEveryMin, timeZoneBangkok, 5}, true, false},
 		{"Normal with large duration", args{exprEveryMin, timeZoneBangkok, 5259000}, true, false},
+		{"Normal with complicated cron expression", args{exprVeryComplicated, timeZoneHonolulu, 5258765}, true, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

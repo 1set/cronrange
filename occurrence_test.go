@@ -106,6 +106,18 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
+		{"very complicated time periods since 2017",
+			crVeryComplicated,
+			args{firstHonoluluSec2017, 5},
+			[]TimeRange{
+				{getTime(locationHonolulu, 2017, 1, 1, 3, 4), getTime(locationHonolulu, 2017, 1, 2, 1, 41)},
+				{getTime(locationHonolulu, 2017, 1, 1, 3, 8), getTime(locationHonolulu, 2017, 1, 2, 1, 45)},
+				{getTime(locationHonolulu, 2017, 1, 1, 3, 22), getTime(locationHonolulu, 2017, 1, 2, 1, 59)},
+				{getTime(locationHonolulu, 2017, 1, 1, 3, 27), getTime(locationHonolulu, 2017, 1, 2, 2, 4)},
+				{getTime(locationHonolulu, 2017, 1, 1, 3, 33), getTime(locationHonolulu, 2017, 1, 2, 2, 10)},
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
