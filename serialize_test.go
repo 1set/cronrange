@@ -98,9 +98,9 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var cr *CronRange
 			if strings.Contains(tt.name, "nil") {
-				cr = nil
+				cr = crNil
 			} else if tt.args.cronExpr == emptyString {
-				cr = &CronRange{}
+				cr = crEmpty
 			} else {
 				var err error
 				if cr, err = New(tt.args.cronExpr, tt.args.timeZone, tt.args.durationMin); err != nil {
@@ -124,9 +124,7 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 }
 
 func BenchmarkCronRange_MarshalJSON(b *testing.B) {
-	cr, _ := New(exprEveryMin, timeZoneBangkok, 10)
-	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = cr.MarshalJSON()
+		_, _ = crEvery1MinBangkok.MarshalJSON()
 	}
 }

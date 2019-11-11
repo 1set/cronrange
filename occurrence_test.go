@@ -7,11 +7,6 @@ import (
 )
 
 func TestCronRange_NextOccurrences(t *testing.T) {
-	var crNil *CronRange
-	crEmpty := &CronRange{}
-	crFirstDayEachMonth, _ := New("0 0 1 * *", "", 1440)
-	crFirstHourFeb29, _ := New("0 0 29 2 *", "", 60)
-	crFirstHourFeb28OrSun, _ := New("0 0 28 2 0", "", 60)
 	type args struct {
 		t     time.Time
 		count int
@@ -25,41 +20,41 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	}{
 		{"nil struct",
 			crNil,
-			args{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), 1},
+			args{firstLocalSec2019, 1},
 			nil,
 			true,
 		},
 		{"empty struct",
 			crEmpty,
-			args{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), 1},
+			args{firstLocalSec2019, 1},
 			nil,
 			true,
 		},
 		{"zero count",
 			crFirstDayEachMonth,
-			args{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), 0},
+			args{firstLocalSec2019, 0},
 			nil,
 			true,
 		},
 		{"negative count",
 			crFirstDayEachMonth,
-			args{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), -5},
+			args{firstLocalSec2019, -5},
 			nil,
 			true,
 		},
 		{"first day of first month in 2019",
 			crFirstDayEachMonth,
-			args{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local).Add(-1 * time.Second), 1},
+			args{lastLocalSec2018, 1},
 			[]TimeRange{
-				{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 1, 2, 0, 0, 0, 0, time.Local)},
+				{firstLocalSec2019, time.Date(2019, 1, 2, 0, 0, 0, 0, time.Local)},
 			},
 			false,
 		},
 		{"first day of first three months in 2019",
 			crFirstDayEachMonth,
-			args{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local).Add(-1 * time.Second), 3},
+			args{lastLocalSec2018, 3},
 			[]TimeRange{
-				{time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 1, 2, 0, 0, 0, 0, time.Local)},
+				{firstLocalSec2019, time.Date(2019, 1, 2, 0, 0, 0, 0, time.Local)},
 				{time.Date(2019, 2, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 2, 2, 0, 0, 0, 0, time.Local)},
 				{time.Date(2019, 3, 1, 0, 0, 0, 0, time.Local), time.Date(2019, 3, 2, 0, 0, 0, 0, time.Local)},
 			},
@@ -67,7 +62,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"first hour of feb 29 since 2012",
 			crFirstHourFeb29,
-			args{time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local), 3},
+			args{firstLocalSec2012, 3},
 			[]TimeRange{
 				{time.Date(2012, 2, 29, 0, 0, 0, 0, time.Local), time.Date(2012, 2, 29, 1, 0, 0, 0, time.Local)},
 				{time.Date(2016, 2, 29, 0, 0, 0, 0, time.Local), time.Date(2016, 2, 29, 1, 0, 0, 0, time.Local)},
@@ -77,7 +72,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"first hour of feb 28 or sunday since 2016",
 			crFirstHourFeb28OrSun,
-			args{time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local), 6},
+			args{firstLocalSec2016, 6},
 			[]TimeRange{
 				{time.Date(2016, 2, 7, 0, 0, 0, 0, time.Local), time.Date(2016, 2, 7, 1, 0, 0, 0, time.Local)},
 				{time.Date(2016, 2, 14, 0, 0, 0, 0, time.Local), time.Date(2016, 2, 14, 1, 0, 0, 0, time.Local)},
@@ -102,3 +97,5 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		})
 	}
 }
+
+// TODO: Benchmark for NC
