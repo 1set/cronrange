@@ -126,6 +126,9 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 			if !tt.wantErr && gotS.CR != nil && gotS.CR.String() != tt.wantS {
 				t.Errorf("UnmarshalJSON() gotCr: %s, want: %s", gotS.CR.String(), tt.wantS)
 			}
+			if !tt.wantErr && gotS.CR != nil && (gotS.CR.schedule == nil || gotS.CR.duration == 0) {
+				t.Errorf("UnmarshalJSON() incomplete gotCr: %v", gotS.CR)
+			}
 		})
 	}
 }
@@ -148,6 +151,9 @@ func TestParseString(t *testing.T) {
 			}
 			if !tt.wantErr && gotCr != nil && gotCr.String() != tt.wantS {
 				t.Errorf("ParseString() gotCr: %s, want: %s", gotCr.String(), tt.wantS)
+			}
+			if !tt.wantErr && gotCr != nil && (gotCr.schedule == nil || gotCr.duration == 0) {
+				t.Errorf("ParseString() incomplete gotCr: %v", gotCr)
 			}
 		})
 	}
