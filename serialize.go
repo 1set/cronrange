@@ -19,7 +19,7 @@ var (
 	errIncompleteExpr     = errors.New("expression should contain at least two parts")
 	errMissDurationExpr   = errors.New("duration is missing from the expression")
 	errEmptyExpr          = errors.New("expression is empty")
-	errJsonNoQuotationFix = errors.New(`json string should start and end with '"'`)
+	errJSONNoQuotationFix = errors.New(`json string should start and end with '"'`)
 )
 
 // String returns a normalized CronRange expression, which can be consumed by ParseString().
@@ -59,7 +59,7 @@ func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 		return errEmptyExpr
 	}
 	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation)) {
-		return errJsonNoQuotationFix
+		return errJSONNoQuotationFix
 	}
 
 	// Extract and treat as CronRange expression

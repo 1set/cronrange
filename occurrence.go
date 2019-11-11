@@ -1,7 +1,14 @@
 package cronrange
 
 import (
+	"errors"
 	"time"
+)
+
+var (
+	errZeroOrNegCount   = errors.New("count should be positive")
+	errNilCronRange     = errors.New("nil CronRange instance")
+	errInvalidCronRange = errors.New("invalid CronRange instance")
 )
 
 // NextOccurrences returns the next occurrence time ranges, later than the given time.

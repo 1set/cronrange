@@ -1,11 +1,19 @@
 package cronrange
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/robfig/cron/v3"
+)
+
+var (
+	cronParseOption = cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow
+	cronParser      = cron.NewParser(cronParseOption)
+
+	errZeroDuration = errors.New("duration should be positive")
 )
 
 // CronRange consists of cron expression along with time zone and duration info.
