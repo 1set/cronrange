@@ -116,6 +116,5 @@ func ParseString(s string) (cr *CronRange, err error) {
 }
 
 func (tr TimeRange) String() string {
-	// TODO: better format with TZ and UTC
-	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
+	return fmt.Sprintf("[%v,%v]", tr.Start.Format(time.RFC3339), tr.End.Format(time.RFC3339))
 }
