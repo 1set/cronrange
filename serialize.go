@@ -22,6 +22,7 @@ var (
 	errJsonNoQuotationFix = errors.New(`json string should start and end with '"'`)
 )
 
+// String returns a normalized CronRange expression, which can be consumed by ParseString().
 func (cr CronRange) String() string {
 	sb := strings.Builder{}
 	sb.Grow(36)
@@ -41,6 +42,7 @@ func (cr CronRange) String() string {
 	return sb.String()
 }
 
+// MarshalJSON implements the encoding/json.Marshaler interface for serialization of CronRange.
 func (cr *CronRange) MarshalJSON() ([]byte, error) {
 	expr := cr.String()
 	if cr == nil || len(expr) == 0 {
@@ -49,6 +51,7 @@ func (cr *CronRange) MarshalJSON() ([]byte, error) {
 	return json.Marshal(expr)
 }
 
+// UnmarshalJSON implements the encoding/json.Unmarshaler interface for deserialization of CronRange.
 func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 	// Precondition checks
 	raw := string(b)
@@ -67,7 +70,7 @@ func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 	return
 }
 
-// TODO: too many returns, fix it later
+// ParseString attempts to deserialize the given expression or return failure.
 func ParseString(s string) (cr *CronRange, err error) {
 	if len(s) == 0 {
 		err = errEmptyExpr
@@ -116,6 +119,7 @@ func ParseString(s string) (cr *CronRange, err error) {
 	return
 }
 
+// String returns a string representing time range with formatted time values in Internet RFC 3339 format.
 func (tr TimeRange) String() string {
 	sb := strings.Builder{}
 	sb.Grow(54)
