@@ -111,3 +111,37 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 	err = json.Unmarshal(gotJ, &gotS)
 	fmt.Println(gotS, err)
 }
+
+func TestParseString(t *testing.T) {
+	tests := []struct {
+		name    string
+		inputS  string
+		wantS   string
+		wantErr bool
+	}{
+		{"empty string", "", "", true},
+		{"invalid expression", "hello", "", true},
+		{"missing duration", "; * * * * *", "", true},
+		{"invalid duration=0", "DR=0;* * * * *", "", true},
+		{"invalid duration=-5", "DR=-5;* * * * *", "", true},
+		{"invalid timezone=Mars", "DR=5;TZ=Mars;* * * * *", "", true},
+		{"normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false},
+		{"normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false},
+		{"normal with empty parts", "  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false},
+		{"normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false},
+		{"normal with utc time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false},
+		{"normal with honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotCr, err := ParseString(tt.inputS)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseString() error: %v, wantErr: %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && gotCr != nil && gotCr.String() != tt.wantS {
+				t.Errorf("ParseString() gotCr: %s, want: %s", gotCr.String(), tt.wantS)
+			}
+		})
+	}
+}

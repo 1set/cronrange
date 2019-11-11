@@ -36,7 +36,9 @@ func (cr *CronRange) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	errEmptyString        = errors.New("got empty string")
+	errIncompleteExpr     = errors.New("expression should contain at least two parts")
+	errMissDurationExpr   = errors.New("duration is missing from the expression")
+	errEmptyExpr          = errors.New("got empty expression")
 	errJsonNoQuotationFix = errors.New(`json string doesn't start or end with '"'`)
 	strDoubleQuotation    = `"`
 	strSemicolon          = `;`
@@ -45,10 +47,11 @@ var (
 )
 
 func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
-	if b == nil || len(b) == 0 {
-		return errEmptyString
-	}
 	raw := string(b)
+	if len(raw) == 0 {
+		return errEmptyExpr
+	}
+
 	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation)) {
 		return errJsonNoQuotationFix
 	}
@@ -62,34 +65,48 @@ func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 
 func ParseString(s string) (cr *CronRange, err error) {
 	if len(s) == 0 {
-		err = errEmptyString
+		err = errEmptyExpr
 		return
 	}
 
-	parts := strings.Split(s, strSemicolon)
-	var cronExpr, timeZone string
-	var durationMin uint64
-	idxExpr := len(parts) - 1
+	var (
+		cronExpr, timeZone, durStr string
+		durMin                     uint64
+		parts                      = strings.Split(s, strSemicolon)
+		idxExpr                    = len(parts) - 1
+	)
+	if idxExpr == 0 {
+		err = errIncompleteExpr
+		return
+	}
 
 	for idx, part := range parts {
 		part = strings.TrimSpace(part)
-
+		// skip empty part
+		if len(part) == 0 {
+			continue
+		}
 		// cron expression must be the last part
 		if idx == idxExpr {
 			cronExpr = part
 		} else if strings.HasPrefix(part, strMarkDuration) {
-			durationStr := part[len(strMarkTimeZone):]
-			if durationMin, err = strconv.ParseUint(durationStr, 10, 64); err != nil {
+			durStr = part[len(strMarkDuration):]
+			if durMin, err = strconv.ParseUint(durStr, 10, 64); err != nil {
 				return
 			}
 		} else if strings.HasPrefix(part, strMarkTimeZone) {
-			timeZone = part[len(strMarkDuration):]
+			timeZone = part[len(strMarkTimeZone):]
 		} else {
-			err = errors.New(`json string has unknown part: ` + part)
+			err = errors.New(fmt.Sprintf(`json string has unknown part: %q`, part))
 			return
 		}
 	}
 
-	cr, err = New(cronExpr, timeZone, durationMin)
+	if len(durStr) == 0 {
+		err = errMissDurationExpr
+		return
+	}
+
+	cr, err = New(cronExpr, timeZone, durMin)
 	return
 }
