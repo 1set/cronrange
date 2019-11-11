@@ -51,6 +51,56 @@ func BenchmarkCronRange_String(b *testing.B) {
 	}
 }
 
+var deserializeTestCases = []struct {
+	name    string
+	inputS  string
+	wantS   string
+	wantErr bool
+}{
+	{"empty string", emptyString, emptyString, true},
+	{"invalid expression", "hello", emptyString, true},
+	{"missing duration", "; * * * * *", emptyString, true},
+	{"invalid duration=0", "DR=0;* * * * *", emptyString, true},
+	{"invalid duration=-5", "DR=-5;* * * * *", emptyString, true},
+	{"invalid timezone=Mars", "DR=5;TZ=Mars;* * * * *", emptyString, true},
+	{"invalid with unknown part", "DR=10; TZ=Pacific/Honolulu; SET=1; * * * * *", emptyString, true},
+	{"invalid with lower case", "dr=5;* * * * *", emptyString, true},
+	{"normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false},
+	{"normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false},
+	{"normal with empty parts", ";  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false},
+	{"normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false},
+	{"normal with utc time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false},
+	{"normal with honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
+	{"normal with complicated expression", "DR=5258765;   TZ=Pacific/Honolulu;   4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", "DR=5258765; TZ=Pacific/Honolulu; 4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", false},
+}
+
+func TestParseString(t *testing.T) {
+	for _, tt := range deserializeTestCases {
+		t.Run(tt.name, func(t *testing.T) {
+			gotCr, err := ParseString(tt.inputS)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseString() error: %v, wantErr: %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && (gotCr == nil || gotCr.schedule == nil || gotCr.duration == 0) {
+				t.Errorf("ParseString() incomplete gotCr: %v", gotCr)
+				return
+			}
+			if !tt.wantErr && gotCr.String() != tt.wantS {
+				t.Errorf("ParseString() gotCr: %s, want: %s", gotCr.String(), tt.wantS)
+			}
+		})
+	}
+}
+
+func BenchmarkParseString(b *testing.B) {
+	rs := "DR=10;TZ=Pacific/Honolulu;;* * * * *"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = ParseString(rs)
+	}
+}
+
 func TestCronRange_MarshalJSON(t *testing.T) {
 	tempStruct := tempTestStruct{
 		nil,
@@ -90,29 +140,6 @@ func BenchmarkCronRange_MarshalJSON(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, _ = crEvery10MinBangkok.MarshalJSON()
 	}
-}
-
-var deserializeTestCases = []struct {
-	name    string
-	inputS  string
-	wantS   string
-	wantErr bool
-}{
-	{"empty string", emptyString, emptyString, true},
-	{"invalid expression", "hello", emptyString, true},
-	{"missing duration", "; * * * * *", emptyString, true},
-	{"invalid duration=0", "DR=0;* * * * *", emptyString, true},
-	{"invalid duration=-5", "DR=-5;* * * * *", emptyString, true},
-	{"invalid timezone=Mars", "DR=5;TZ=Mars;* * * * *", emptyString, true},
-	{"invalid with unknown part", "DR=10; TZ=Pacific/Honolulu; SET=1; * * * * *", emptyString, true},
-	{"invalid with lower case", "dr=5;* * * * *", emptyString, true},
-	{"normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false},
-	{"normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false},
-	{"normal with empty parts", ";  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false},
-	{"normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false},
-	{"normal with utc time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false},
-	{"normal with honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
-	{"normal with complicated expression", "DR=5258765;   TZ=Pacific/Honolulu;   4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", "DR=5258765; TZ=Pacific/Honolulu; 4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", false},
 }
 
 func TestCronRange_UnmarshalJSON(t *testing.T) {
@@ -165,25 +192,6 @@ func BenchmarkCronRange_UnmarshalJSON(b *testing.B) {
 	var gotS tempTestStruct
 	for i := 0; i < b.N; i++ {
 		_ = json.Unmarshal(jsonFull, &gotS)
-	}
-}
-
-func TestParseString(t *testing.T) {
-	for _, tt := range deserializeTestCases {
-		t.Run(tt.name, func(t *testing.T) {
-			gotCr, err := ParseString(tt.inputS)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseString() error: %v, wantErr: %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr && (gotCr == nil || gotCr.schedule == nil || gotCr.duration == 0) {
-				t.Errorf("ParseString() incomplete gotCr: %v", gotCr)
-				return
-			}
-			if !tt.wantErr && gotCr.String() != tt.wantS {
-				t.Errorf("ParseString() gotCr: %s, want: %s", gotCr.String(), tt.wantS)
-			}
-		})
 	}
 }
 
