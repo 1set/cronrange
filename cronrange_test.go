@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-var (
-	emptyString          = ""
-	exprEveryMin         = "* * * * *"
-	exprEveryXmasMorning = "0 8 25 12 *"
-	exprEveryNewYear     = "0 0 1 1 *"
-	timeZoneBangkok      = "Asia/Bangkok"
-	timeZoneNewYork      = "America/New_York"
-)
-
 func TestNew(t *testing.T) {
 	type args struct {
 		cronExpr    string
