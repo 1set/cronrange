@@ -193,8 +193,8 @@ func TestTimeRange_String(t *testing.T) {
 		want   string
 	}{
 		{"from zero to zero", fields{zeroTime, zeroTime}, "[0001-01-01T00:00:00Z,0001-01-01T00:00:00Z]"},
-		{"first day of 2020 in utc", fields{firstUtcSec2020, firstUtcSec2020.AddDate(0, 0, 1)}, "[2020-01-01T00:00:00Z,2020-01-02T00:00:00Z]"},
-		{"first month of 2019 in bangkok", fields{firstBangkokSec2019, firstBangkokSec2019.AddDate(0, 1, 0)}, "[2019-01-01T00:00:00+07:00,2019-02-01T00:00:00+07:00]"},
+		{"first day of 2020 in utc", fields{firstSec2020Utc, firstSec2020Utc.AddDate(0, 0, 1)}, "[2020-01-01T00:00:00Z,2020-01-02T00:00:00Z]"},
+		{"first month of 2019 in bangkok", fields{firstSec2019Bangkok, firstSec2019Bangkok.AddDate(0, 1, 0)}, "[2019-01-01T00:00:00+07:00,2019-02-01T00:00:00+07:00]"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -210,7 +210,7 @@ func TestTimeRange_String(t *testing.T) {
 }
 
 func BenchmarkTimeRange_String(b *testing.B) {
-	tr := TimeRange{firstBangkokSec2019, firstBangkokSec2019.AddDate(0, 1, 0)}
+	tr := TimeRange{firstSec2019Bangkok, firstSec2019Bangkok.AddDate(0, 1, 0)}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = tr.String()

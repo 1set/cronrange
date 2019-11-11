@@ -25,13 +25,13 @@ var (
 
 var (
 	zeroTime             = time.Time{}
-	firstUtcSec2020      = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
-	firstLocalSec2012    = time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local)
-	firstLocalSec2016    = time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local)
-	firstLocalSec2019    = time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
-	firstBangkokSec2019  = time.Date(2019, 1, 1, 0, 0, 0, 0, locationBangkok)
-	firstHonoluluSec2017 = time.Date(2017, 1, 1, 0, 0, 0, 0, locationHonolulu)
-	lastLocalSec2018     = firstLocalSec2019.Add(-1 * time.Second)
+	firstSec2020Utc      = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	firstSec2012Local    = time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local)
+	firstSec2016Local    = time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local)
+	firstSec2019Local    = time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
+	firstSec2019Bangkok  = time.Date(2019, 1, 1, 0, 0, 0, 0, locationBangkok)
+	firstSec2017Honolulu = time.Date(2017, 1, 1, 0, 0, 0, 0, locationHonolulu)
+	lastSec2018Local     = firstSec2019Local.Add(-1 * time.Second)
 )
 
 var (

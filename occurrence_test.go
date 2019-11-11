@@ -19,33 +19,33 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	}{
 		{"nil struct",
 			crNil,
-			args{firstLocalSec2019, 1},
+			args{firstSec2019Local, 1},
 			nil,
 			true,
 		},
 		{"empty struct",
 			crEmpty,
-			args{firstLocalSec2019, 1},
+			args{firstSec2019Local, 1},
 			nil,
 			true,
 		},
 		{"zero count",
 			crFirstDayEachMonth,
-			args{firstLocalSec2019, 0},
+			args{firstSec2019Local, 0},
 			nil,
 			true,
 		},
 		{"negative count",
 			crFirstDayEachMonth,
-			args{firstLocalSec2019, -5},
+			args{firstSec2019Local, -5},
 			nil,
 			true,
 		},
 		{"first day of january in 2019",
 			crFirstDayEachMonth,
-			args{lastLocalSec2018, 1},
+			args{lastSec2018Local, 1},
 			[]TimeRange{
-				{firstLocalSec2019, getLocalTime(2019, 1, 2, 0, 0)},
+				{firstSec2019Local, getLocalTime(2019, 1, 2, 0, 0)},
 			},
 			false,
 		},
@@ -75,9 +75,9 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"first day of first three months in 2019",
 			crFirstDayEachMonth,
-			args{lastLocalSec2018, 3},
+			args{lastSec2018Local, 3},
 			[]TimeRange{
-				{firstLocalSec2019, getLocalTime(2019, 1, 2, 0, 0)},
+				{firstSec2019Local, getLocalTime(2019, 1, 2, 0, 0)},
 				{getLocalTime(2019, 2, 1, 0, 0), getLocalTime(2019, 2, 2, 0, 0)},
 				{getLocalTime(2019, 3, 1, 0, 0), getLocalTime(2019, 3, 2, 0, 0)},
 			},
@@ -85,7 +85,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"first hour of feb 29 since 2012",
 			crFirstHourFeb29,
-			args{firstLocalSec2012, 3},
+			args{firstSec2012Local, 3},
 			[]TimeRange{
 				{getLocalTime(2012, 2, 29, 0, 0), getLocalTime(2012, 2, 29, 1, 0)},
 				{getLocalTime(2016, 2, 29, 0, 0), getLocalTime(2016, 2, 29, 1, 0)},
@@ -95,7 +95,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"first hour of feb 28 or sunday since 2016",
 			crFirstHourFeb28OrSun,
-			args{firstLocalSec2016, 6},
+			args{firstSec2016Local, 6},
 			[]TimeRange{
 				{getLocalTime(2016, 2, 7, 0, 0), getLocalTime(2016, 2, 7, 1, 0)},
 				{getLocalTime(2016, 2, 14, 0, 0), getLocalTime(2016, 2, 14, 1, 0)},
@@ -108,7 +108,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"first days of jan with overlap in 2012",
 			crEveryDayWithOverlap,
-			args{firstLocalSec2012, 5},
+			args{firstSec2012Local, 5},
 			[]TimeRange{
 				{getLocalTime(2012, 1, 2, 0, 0), getLocalTime(2012, 1, 4, 0, 0)},
 				{getLocalTime(2012, 1, 3, 0, 0), getLocalTime(2012, 1, 5, 0, 0)},
@@ -120,7 +120,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		},
 		{"very complicated time periods since 2017",
 			crVeryComplicated,
-			args{firstHonoluluSec2017, 5},
+			args{firstSec2017Honolulu, 5},
 			[]TimeRange{
 				{getTime(locationHonolulu, 2017, 1, 1, 3, 4), getTime(locationHonolulu, 2017, 1, 2, 1, 41)},
 				{getTime(locationHonolulu, 2017, 1, 1, 3, 8), getTime(locationHonolulu, 2017, 1, 2, 1, 45)},
@@ -147,6 +147,6 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 
 func BenchmarkCronRange_NextOccurrences(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = crEvery10MinBangkok.NextOccurrences(firstLocalSec2019, 10)
+		_, _ = crEvery10MinBangkok.NextOccurrences(firstSec2019Local, 10)
 	}
 }
