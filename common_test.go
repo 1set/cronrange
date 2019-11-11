@@ -30,7 +30,11 @@ var (
 	crNil                          *CronRange
 	crEmpty                        = &CronRange{}
 	crEvery1Min, _                 = New(exprEveryMin, emptyString, 1)
-	crEvery1MinBangkok, _          = New(exprEveryMin, timeZoneBangkok, 10)
+	crEvery5Min, _                 = New(exprEveryMin, emptyString, 5)
+	crEvery10MinLocal, _           = New(exprEveryMin, emptyString, 10)
+	crEvery10MinBangkok, _         = New(exprEveryMin, timeZoneBangkok, 10)
+	crEveryXmasMorningNYC, _       = New(exprEveryXmasMorning, timeZoneNewYork, 240)
+	crEveryNewYearsDayBangkok, _   = New(exprEveryNewYear, timeZoneBangkok, 1440)
 	crFirstDayEachMonth, _         = New("0 0 1 * *", "", 1440)
 	crSecondDayEachMonthBangkok, _ = New("0 0 2 * *", timeZoneBangkok, 1440)
 	crThirdDayEachMonthHonolulu, _ = New("0 0 3 * *", timeZoneHonolulu, 1440)

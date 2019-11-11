@@ -8,41 +8,25 @@ import (
 )
 
 func TestCronRange_String(t *testing.T) {
-	type args struct {
-		cronExpr    string
-		timeZone    string
-		durationMin uint64
-	}
 	tests := []struct {
 		name string
-		args args
+		cr   *CronRange
 		want string
 	}{
-		{"nil struct", args{emptyString, emptyString, 0}, "<nil>"},
-		{"empty struct", args{emptyString, emptyString, 0}, emptyString},
-		{"use string() instead of sprintf", args{exprEveryMin, emptyString, 1}, "DR=1; * * * * *"},
-		{"use instance instead of pointer", args{exprEveryMin, emptyString, 1}, "DR=1; * * * * *"},
-		{"1min duration without time zone", args{exprEveryMin, emptyString, 1}, "DR=1; * * * * *"},
-		{"5min duration without time zone", args{exprEveryMin, emptyString, 5}, "DR=5; * * * * *"},
-		{"10min duration with local time zone", args{exprEveryMin, "local", 10}, "DR=10; * * * * *"},
-		{"10min duration with time zone", args{exprEveryMin, timeZoneBangkok, 10}, "DR=10; TZ=Asia/Bangkok; * * * * *"},
-		{"every xmas morning in new york city", args{exprEveryXmasMorning, timeZoneNewYork, 240}, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
-		{"every new year's day in bangkok", args{exprEveryNewYear, timeZoneBangkok, 1440}, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
+		{"nil struct", crNil, "<nil>"},
+		{"empty struct", crEmpty, emptyString},
+		{"use string() instead of sprintf", crEvery1Min, "DR=1; * * * * *"},
+		{"use instance instead of pointer", crEvery1Min, "DR=1; * * * * *"},
+		{"1min duration without time zone", crEvery1Min, "DR=1; * * * * *"},
+		{"5min duration without time zone", crEvery5Min, "DR=5; * * * * *"},
+		{"10min duration with local time zone", crEvery10MinLocal, "DR=10; * * * * *"},
+		{"10min duration with time zone", crEvery10MinBangkok, "DR=10; TZ=Asia/Bangkok; * * * * *"},
+		{"every xmas morning in new york city", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
+		{"every new year's day in bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var cr *CronRange
-			if strings.Contains(tt.name, "nil") {
-				cr = nil
-			} else if tt.args.cronExpr == emptyString {
-				cr = &CronRange{}
-			} else {
-				var err error
-				if cr, err = New(tt.args.cronExpr, tt.args.timeZone, tt.args.durationMin); err != nil {
-					t.Errorf("New() error = %v", err)
-					return
-				}
-			}
+			cr := tt.cr
 			var got string
 			if strings.Contains(tt.name, "string()") {
 				got = cr.String()
@@ -76,40 +60,22 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 		"Test",
 		1111,
 	}
-	type args struct {
-		cronExpr    string
-		timeZone    string
-		durationMin uint64
-	}
 	tests := []struct {
 		name  string
-		args  args
+		cr    *CronRange
 		wantJ string
 	}{
-		{"nil struct", args{emptyString, emptyString, 0}, `{"CR":null,"Name":"Test","Value":1111}`},
-		{"empty struct", args{emptyString, emptyString, 0}, `{"CR":null,"Name":"Test","Value":1111}`},
-		{"5min duration without time zone", args{exprEveryMin, emptyString, 5}, `{"CR":"DR=5; * * * * *","Name":"Test","Value":1111}`},
-		{"10min duration with local time zone", args{exprEveryMin, "local", 10}, `{"CR":"DR=10; * * * * *","Name":"Test","Value":1111}`},
-		{"10min duration with time zone", args{exprEveryMin, timeZoneBangkok, 10}, `{"CR":"DR=10; TZ=Asia/Bangkok; * * * * *","Name":"Test","Value":1111}`},
-		{"every xmas morning in new york city", args{exprEveryXmasMorning, timeZoneNewYork, 240}, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
-		{"every new year's day in bangkok", args{exprEveryNewYear, timeZoneBangkok, 1440}, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
+		{"nil struct", crNil, `{"CR":null,"Name":"Test","Value":1111}`},
+		{"empty struct", crEmpty, `{"CR":null,"Name":"Test","Value":1111}`},
+		{"5min duration without time zone", crEvery5Min, `{"CR":"DR=5; * * * * *","Name":"Test","Value":1111}`},
+		{"10min duration with local time zone", crEvery10MinLocal, `{"CR":"DR=10; * * * * *","Name":"Test","Value":1111}`},
+		{"10min duration with time zone", crEvery10MinBangkok, `{"CR":"DR=10; TZ=Asia/Bangkok; * * * * *","Name":"Test","Value":1111}`},
+		{"every xmas morning in new york city", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
+		{"every new year's day in bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var cr *CronRange
-			if strings.Contains(tt.name, "nil") {
-				cr = crNil
-			} else if tt.args.cronExpr == emptyString {
-				cr = crEmpty
-			} else {
-				var err error
-				if cr, err = New(tt.args.cronExpr, tt.args.timeZone, tt.args.durationMin); err != nil {
-					t.Errorf("New() error = %v", err)
-					return
-				}
-			}
-
-			tempStruct.CR = cr
+			tempStruct.CR = tt.cr
 			got, err := json.Marshal(tempStruct)
 			if err != nil {
 				t.Errorf("Marshal() error = %v", err)
@@ -125,6 +91,6 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 
 func BenchmarkCronRange_MarshalJSON(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = crEvery1MinBangkok.MarshalJSON()
+		_, _ = crEvery10MinBangkok.MarshalJSON()
 	}
 }
