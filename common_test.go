@@ -7,6 +7,7 @@ var (
 	exprEveryMin         = "* * * * *"
 	exprEvery5Min        = "*/5 * * * *"
 	exprEvery10Min       = "*/10 * * * *"
+	exprEveryDay         = "0 0 * * *"
 	exprEveryXmasMorning = "0 8 25 12 *"
 	exprEveryNewYear     = "0 0 1 1 *"
 	exprVeryComplicated  = "4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5"
@@ -40,6 +41,7 @@ var (
 	crEvery5Min, _                 = New(exprEvery5Min, emptyString, 5)
 	crEvery10MinLocal, _           = New(exprEvery10Min, emptyString, 10)
 	crEvery10MinBangkok, _         = New(exprEvery10Min, timeZoneBangkok, 10)
+	crEveryDayWithOverlap, _       = New(exprEveryDay, emptyString, 60*24*2)
 	crEveryXmasMorningNYC, _       = New(exprEveryXmasMorning, timeZoneNewYork, 240)
 	crEveryNewYearsDayBangkok, _   = New(exprEveryNewYear, timeZoneBangkok, 1440)
 	crVeryComplicated, _           = New(exprVeryComplicated, timeZoneHonolulu, 1357)
