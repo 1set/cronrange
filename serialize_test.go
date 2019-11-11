@@ -50,12 +50,14 @@ func BenchmarkCronRange_String(b *testing.B) {
 	}
 }
 
+type tempTestStruct struct {
+	CR    *CronRange
+	Name  string
+	Value int
+}
+
 func TestCronRange_MarshalJSON(t *testing.T) {
-	tempStruct := struct {
-		CR    *CronRange
-		Name  string
-		Value int
-	}{
+	tempStruct := tempTestStruct{
 		nil,
 		"Test",
 		1111,
@@ -93,4 +95,19 @@ func BenchmarkCronRange_MarshalJSON(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, _ = crEvery10MinBangkok.MarshalJSON()
 	}
+}
+
+func TestCronRange_UnmarshalJSON(t *testing.T) {
+	tempStruct := tempTestStruct{
+		nil,
+		"Demo",
+		2222,
+	}
+	tempStruct.CR = crEvery10MinBangkok
+	gotJ, err := json.Marshal(tempStruct)
+	fmt.Printf("J: %s, %v\n", gotJ, err)
+
+	var gotS tempTestStruct
+	err = json.Unmarshal(gotJ, &gotS)
+	fmt.Println(gotS, err)
 }

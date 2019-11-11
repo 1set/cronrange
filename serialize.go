@@ -32,6 +32,12 @@ func (cr *CronRange) MarshalJSON() ([]byte, error) {
 	return json.Marshal(expr)
 }
 
-func (cr *CronRange) UnmarshalJSON([]byte) error {
-	panic("implement me")
+func (cr *CronRange) UnmarshalJSON(b []byte) error {
+	content := string(b)
+	fmt.Println("UM", content)
+	return nil
+}
+
+func ParseString(s string) (cr *CronRange, err error)  {
+	return
 }
