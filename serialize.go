@@ -53,7 +53,6 @@ func (cr *CronRange) MarshalJSON() ([]byte, error) {
 	return json.Marshal(expr)
 }
 
-// TODO: add tests
 func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 	// Precondition checks
 	raw := string(b)
