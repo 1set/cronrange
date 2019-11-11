@@ -97,6 +97,7 @@ func BenchmarkCronRange_MarshalJSON(b *testing.B) {
 	}
 }
 
+// TODO: finish tests
 func TestCronRange_UnmarshalJSON(t *testing.T) {
 	tempStruct := tempTestStruct{
 		nil,

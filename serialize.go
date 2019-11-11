@@ -9,13 +9,32 @@ import (
 	"time"
 )
 
+var (
+	strSingleWhitespace = ` `
+	strDoubleQuotation  = `"`
+	strSemicolon        = `;`
+	strMarkDuration     = `DR=`
+	strMarkTimeZone     = `TZ=`
+
+	errIncompleteExpr     = errors.New("expression should contain at least two parts")
+	errMissDurationExpr   = errors.New("duration is missing from the expression")
+	errEmptyExpr          = errors.New("expression is empty")
+	errJsonNoQuotationFix = errors.New(`json string should start and end with '"'`)
+)
+
 func (cr CronRange) String() string {
 	sb := strings.Builder{}
 	if cr.duration > 0 {
-		sb.WriteString(fmt.Sprintf("DR=%d; ", cr.duration/time.Minute))
+		sb.WriteString(strMarkDuration)
+		sb.WriteString(strconv.FormatUint(uint64(cr.duration/time.Minute), 10))
+		sb.WriteString(strSemicolon)
+		sb.WriteString(strSingleWhitespace)
 	}
 	if len(cr.timeZone) > 0 {
-		sb.WriteString(fmt.Sprintf("TZ=%s; ", cr.timeZone))
+		sb.WriteString(strMarkTimeZone)
+		sb.WriteString(cr.timeZone)
+		sb.WriteString(strSemicolon)
+		sb.WriteString(strSingleWhitespace)
 	}
 	sb.WriteString(cr.cronExpression)
 	return sb.String()
@@ -31,31 +50,21 @@ func (cr *CronRange) MarshalJSON() ([]byte, error) {
 	if cr == nil || len(expr) == 0 {
 		return []byte("null"), nil
 	}
-
 	return json.Marshal(expr)
 }
 
-var (
-	errIncompleteExpr     = errors.New("expression should contain at least two parts")
-	errMissDurationExpr   = errors.New("duration is missing from the expression")
-	errEmptyExpr          = errors.New("got empty expression")
-	errJsonNoQuotationFix = errors.New(`json string doesn't start or end with '"'`)
-	strDoubleQuotation    = `"`
-	strSemicolon          = `;`
-	strMarkDuration       = `DR=`
-	strMarkTimeZone       = `TZ=`
-)
-
+// TODO: add tests
 func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
+	// Precondition checks
 	raw := string(b)
 	if len(raw) == 0 {
 		return errEmptyExpr
 	}
-
 	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation)) {
 		return errJsonNoQuotationFix
 	}
 
+	// Extract and treat as CronRange expression
 	var newCr *CronRange
 	if newCr, err = ParseString(raw[1 : len(raw)-1]); err == nil {
 		*cr = *newCr
@@ -63,6 +72,7 @@ func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 	return
 }
 
+// TODO: too many returns, fix it later
 func ParseString(s string) (cr *CronRange, err error) {
 	if len(s) == 0 {
 		err = errEmptyExpr

@@ -24,7 +24,7 @@ type TimeRange struct {
 
 // New returns a CronRange instance with given config, timeZone can be empty for local time zone.
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
-	// Precondition checks
+	// Precondition check
 	if durationMin == 0 {
 		err = errZeroDuration
 		return
