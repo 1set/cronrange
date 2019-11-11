@@ -24,6 +24,7 @@ var (
 
 func (cr CronRange) String() string {
 	sb := strings.Builder{}
+	sb.Grow(36)
 	if cr.duration > 0 {
 		sb.WriteString(strMarkDuration)
 		sb.WriteString(strconv.FormatUint(uint64(cr.duration/time.Minute), 10))
@@ -101,7 +102,7 @@ func ParseString(s string) (cr *CronRange, err error) {
 		} else if strings.HasPrefix(part, strMarkTimeZone) {
 			timeZone = part[len(strMarkTimeZone):]
 		} else {
-			err = errors.New(fmt.Sprintf(`json string has unknown part: %q`, part))
+			err = fmt.Errorf(`json string has unknown part: %q`, part)
 			return
 		}
 	}
@@ -116,5 +117,12 @@ func ParseString(s string) (cr *CronRange, err error) {
 }
 
 func (tr TimeRange) String() string {
-	return fmt.Sprintf("[%v,%v]", tr.Start.Format(time.RFC3339), tr.End.Format(time.RFC3339))
+	sb := strings.Builder{}
+	sb.Grow(54)
+	sb.WriteString("[")
+	sb.WriteString(tr.Start.Format(time.RFC3339))
+	sb.WriteString(",")
+	sb.WriteString(tr.End.Format(time.RFC3339))
+	sb.WriteString("]")
+	return sb.String()
 }

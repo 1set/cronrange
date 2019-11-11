@@ -179,3 +179,11 @@ func TestTimeRange_String(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkTimeRange_String(b *testing.B) {
+	tr := TimeRange{firstBangkokSec2019, firstBangkokSec2019.AddDate(0, 1, 0)}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = tr.String()
+	}
+}
