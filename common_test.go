@@ -5,6 +5,8 @@ import "time"
 var (
 	emptyString          = ""
 	exprEveryMin         = "* * * * *"
+	exprEvery5Min        = "*/5 * * * *"
+	exprEvery10Min       = "*/10 * * * *"
 	exprEveryXmasMorning = "0 8 25 12 *"
 	exprEveryNewYear     = "0 0 1 1 *"
 	timeZoneBangkok      = "Asia/Bangkok"
@@ -30,9 +32,9 @@ var (
 	crNil                          *CronRange
 	crEmpty                        = &CronRange{}
 	crEvery1Min, _                 = New(exprEveryMin, emptyString, 1)
-	crEvery5Min, _                 = New(exprEveryMin, emptyString, 5)
-	crEvery10MinLocal, _           = New(exprEveryMin, emptyString, 10)
-	crEvery10MinBangkok, _         = New(exprEveryMin, timeZoneBangkok, 10)
+	crEvery5Min, _                 = New(exprEvery5Min, emptyString, 5)
+	crEvery10MinLocal, _           = New(exprEvery10Min, emptyString, 10)
+	crEvery10MinBangkok, _         = New(exprEvery10Min, timeZoneBangkok, 10)
 	crEveryXmasMorningNYC, _       = New(exprEveryXmasMorning, timeZoneNewYork, 240)
 	crEveryNewYearsDayBangkok, _   = New(exprEveryNewYear, timeZoneBangkok, 1440)
 	crFirstDayEachMonth, _         = New("0 0 1 * *", "", 1440)

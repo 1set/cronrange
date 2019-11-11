@@ -18,9 +18,9 @@ func TestCronRange_String(t *testing.T) {
 		{"use string() instead of sprintf", crEvery1Min, "DR=1; * * * * *"},
 		{"use instance instead of pointer", crEvery1Min, "DR=1; * * * * *"},
 		{"1min duration without time zone", crEvery1Min, "DR=1; * * * * *"},
-		{"5min duration without time zone", crEvery5Min, "DR=5; * * * * *"},
-		{"10min duration with local time zone", crEvery10MinLocal, "DR=10; * * * * *"},
-		{"10min duration with time zone", crEvery10MinBangkok, "DR=10; TZ=Asia/Bangkok; * * * * *"},
+		{"5min duration without time zone", crEvery5Min, "DR=5; */5 * * * *"},
+		{"10min duration with local time zone", crEvery10MinLocal, "DR=10; */10 * * * *"},
+		{"10min duration with time zone", crEvery10MinBangkok, "DR=10; TZ=Asia/Bangkok; */10 * * * *"},
 		{"every xmas morning in new york city", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
 		{"every new year's day in bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
 	}
@@ -67,9 +67,9 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 	}{
 		{"nil struct", crNil, `{"CR":null,"Name":"Test","Value":1111}`},
 		{"empty struct", crEmpty, `{"CR":null,"Name":"Test","Value":1111}`},
-		{"5min duration without time zone", crEvery5Min, `{"CR":"DR=5; * * * * *","Name":"Test","Value":1111}`},
-		{"10min duration with local time zone", crEvery10MinLocal, `{"CR":"DR=10; * * * * *","Name":"Test","Value":1111}`},
-		{"10min duration with time zone", crEvery10MinBangkok, `{"CR":"DR=10; TZ=Asia/Bangkok; * * * * *","Name":"Test","Value":1111}`},
+		{"5min duration without time zone", crEvery5Min, `{"CR":"DR=5; */5 * * * *","Name":"Test","Value":1111}`},
+		{"10min duration with local time zone", crEvery10MinLocal, `{"CR":"DR=10; */10 * * * *","Name":"Test","Value":1111}`},
+		{"10min duration with time zone", crEvery10MinBangkok, `{"CR":"DR=10; TZ=Asia/Bangkok; */10 * * * *","Name":"Test","Value":1111}`},
 		{"every xmas morning in new york city", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
 		{"every new year's day in bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
 	}
@@ -83,7 +83,7 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 			}
 			gotJ := string(got)
 			if gotJ != tt.wantJ {
-				t.Errorf("MarshalJSON() got = %v, want %q", gotJ, tt.wantJ)
+				t.Errorf("MarshalJSON() got = %v, want %v", gotJ, tt.wantJ)
 			}
 		})
 	}
