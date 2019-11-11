@@ -29,3 +29,11 @@ var (
 	crFirstHourFeb29, _      = New("0 0 29 2 *", "", 60)
 	crFirstHourFeb28OrSun, _ = New("0 0 28 2 0", "", 60)
 )
+
+func getLocalTime(year, month, day, hour, minute int) time.Time {
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
+}
+
+func getTime(location *time.Location, year, month, day, hour, minute int) time.Time {
+	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, location)
+}
