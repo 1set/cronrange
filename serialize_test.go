@@ -98,12 +98,14 @@ var deserializeTestCases = []struct {
 	wantS   string
 	wantErr bool
 }{
-	{"empty string", "", "", true},
-	{"invalid expression", "hello", "", true},
-	{"missing duration", "; * * * * *", "", true},
-	{"invalid duration=0", "DR=0;* * * * *", "", true},
-	{"invalid duration=-5", "DR=-5;* * * * *", "", true},
-	{"invalid timezone=Mars", "DR=5;TZ=Mars;* * * * *", "", true},
+	{"empty string", emptyString, emptyString, true},
+	{"invalid expression", "hello", emptyString, true},
+	{"missing duration", "; * * * * *", emptyString, true},
+	{"invalid duration=0", "DR=0;* * * * *", emptyString, true},
+	{"invalid duration=-5", "DR=-5;* * * * *", emptyString, true},
+	{"invalid timezone=Mars", "DR=5;TZ=Mars;* * * * *", emptyString, true},
+	{"invalid with unknown part", "DR=10; TZ=Pacific/Honolulu; SET=1; * * * * *", emptyString, true},
+	{"invalid with lower case", "dr=5;* * * * *", emptyString, true},
 	{"normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false},
 	{"normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false},
 	{"normal with empty parts", ";  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false},
@@ -134,6 +136,9 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 			}
 
 			jsonBrokens := []string{
+				jsonPrefix[0:len(jsonPrefix)-1] + tt.inputS + jsonSuffix[1:len(jsonSuffix)-1],
+				jsonPrefix[0:len(jsonPrefix)-1] + tt.inputS + jsonSuffix,
+				jsonPrefix + tt.inputS + jsonSuffix[1:len(jsonSuffix)-1],
 				jsonSuffix + jsonPrefix,
 				jsonPrefix + tt.inputS,
 				tt.inputS + jsonSuffix,
