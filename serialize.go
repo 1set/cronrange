@@ -40,11 +40,6 @@ func (cr CronRange) String() string {
 	return sb.String()
 }
 
-func (tr TimeRange) String() string {
-	// TODO: better format with TZ and UTC
-	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
-}
-
 func (cr *CronRange) MarshalJSON() ([]byte, error) {
 	expr := cr.String()
 	if cr == nil || len(expr) == 0 {
@@ -118,4 +113,9 @@ func ParseString(s string) (cr *CronRange, err error) {
 
 	cr, err = New(cronExpr, timeZone, durMin)
 	return
+}
+
+func (tr TimeRange) String() string {
+	// TODO: better format with TZ and UTC
+	return fmt.Sprintf("[%v, %v]", tr.Start, tr.End)
 }

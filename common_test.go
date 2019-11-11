@@ -22,6 +22,7 @@ var (
 )
 
 var (
+	zeroTime          = time.Time{}
 	firstLocalSec2012 = time.Date(2012, 1, 1, 0, 0, 0, 0, time.Local)
 	firstLocalSec2016 = time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local)
 	firstLocalSec2019 = time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
@@ -43,6 +44,12 @@ var (
 	crFirstHourFeb29, _            = New("0 0 29 2 *", "", 60)
 	crFirstHourFeb28OrSun, _       = New("0 0 28 2 0", "", 60)
 )
+
+type tempTestStruct struct {
+	CR    *CronRange
+	Name  string
+	Value int
+}
 
 func getLocalTime(year, month, day, hour, minute int) time.Time {
 	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)

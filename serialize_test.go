@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestCronRange_String(t *testing.T) {
@@ -48,12 +49,6 @@ func BenchmarkCronRange_String(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = cr.String()
 	}
-}
-
-type tempTestStruct struct {
-	CR    *CronRange
-	Name  string
-	Value int
 }
 
 func TestCronRange_MarshalJSON(t *testing.T) {
@@ -153,6 +148,31 @@ func TestParseString(t *testing.T) {
 			}
 			if !tt.wantErr && gotCr != nil && gotCr.String() != tt.wantS {
 				t.Errorf("ParseString() gotCr: %s, want: %s", gotCr.String(), tt.wantS)
+			}
+		})
+	}
+}
+
+func TestTimeRange_String(t *testing.T) {
+	type fields struct {
+		Start time.Time
+		End   time.Time
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{"from zero to zero", fields{zeroTime, zeroTime}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tr := TimeRange{
+				Start: tt.fields.Start,
+				End:   tt.fields.End,
+			}
+			if got := tr.String(); got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
 			}
 		})
 	}
