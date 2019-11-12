@@ -72,22 +72,23 @@ func ParseString(s string) (cr *CronRange, err error) {
 		} else if strings.HasPrefix(part, strMarkDuration) {
 			durStr = part[len(strMarkDuration):]
 			if durMin, err = strconv.ParseUint(durStr, 10, 64); err != nil {
-				return
+				break
 			}
 		} else if strings.HasPrefix(part, strMarkTimeZone) {
 			timeZone = part[len(strMarkTimeZone):]
 		} else {
 			err = fmt.Errorf(`expression got unknown part: %q`, part)
-			return
+			break
 		}
 	}
 
-	if len(durStr) == 0 {
-		err = errMissDurationExpr
-		return
+	if err == nil {
+		if len(durStr) > 0 {
+			cr, err = New(cronExpr, timeZone, durMin)
+		} else {
+			err = errMissDurationExpr
+		}
 	}
-
-	cr, err = New(cronExpr, timeZone, durMin)
 	return
 }
 
