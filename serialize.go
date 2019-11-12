@@ -42,34 +42,6 @@ func (cr CronRange) String() string {
 	return sb.String()
 }
 
-// MarshalJSON implements the encoding/json.Marshaler interface for serialization of CronRange.
-func (cr *CronRange) MarshalJSON() ([]byte, error) {
-	expr := cr.String()
-	if cr == nil || len(expr) == 0 {
-		return []byte("null"), nil
-	}
-	return json.Marshal(expr)
-}
-
-// UnmarshalJSON implements the encoding/json.Unmarshaler interface for deserialization of CronRange.
-func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
-	// Precondition checks
-	raw := string(b)
-	if len(raw) == 0 {
-		return errEmptyExpr
-	}
-	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation)) {
-		return errJSONNoQuotationFix
-	}
-
-	// Extract and treat as CronRange expression
-	var newCr *CronRange
-	if newCr, err = ParseString(raw[1 : len(raw)-1]); err == nil {
-		*cr = *newCr
-	}
-	return
-}
-
 // ParseString attempts to deserialize the given expression or return failure.
 func ParseString(s string) (cr *CronRange, err error) {
 	if len(s) == 0 {
@@ -116,6 +88,34 @@ func ParseString(s string) (cr *CronRange, err error) {
 	}
 
 	cr, err = New(cronExpr, timeZone, durMin)
+	return
+}
+
+// MarshalJSON implements the encoding/json.Marshaler interface for serialization of CronRange.
+func (cr *CronRange) MarshalJSON() ([]byte, error) {
+	expr := cr.String()
+	if cr == nil || len(expr) == 0 {
+		return []byte("null"), nil
+	}
+	return json.Marshal(expr)
+}
+
+// UnmarshalJSON implements the encoding/json.Unmarshaler interface for deserialization of CronRange.
+func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
+	// Precondition checks
+	raw := string(b)
+	if len(raw) == 0 {
+		return errEmptyExpr
+	}
+	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation)) {
+		return errJSONNoQuotationFix
+	}
+
+	// Extract and treat as CronRange expression
+	var newCr *CronRange
+	if newCr, err = ParseString(raw[1 : len(raw)-1]); err == nil {
+		*cr = *newCr
+	}
 	return
 }
 
