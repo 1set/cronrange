@@ -22,8 +22,8 @@ func TestCronRange_String(t *testing.T) {
 		{"5min duration without time zone", crEvery5Min, "DR=5; */5 * * * *"},
 		{"10min duration with local time zone", crEvery10MinLocal, "DR=10; */10 * * * *"},
 		{"10min duration with time zone", crEvery10MinBangkok, "DR=10; TZ=Asia/Bangkok; */10 * * * *"},
-		{"Every xmas morning in new york city", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
-		{"Every new year's day in bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
+		{"Every Xmas morning in NYC", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
+		{"Every New Year's Day in Bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -124,8 +124,8 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 		{"5min duration without time zone", crEvery5Min, `{"CR":"DR=5; */5 * * * *","Name":"Test","Value":1111}`},
 		{"10min duration with local time zone", crEvery10MinLocal, `{"CR":"DR=10; */10 * * * *","Name":"Test","Value":1111}`},
 		{"10min duration with time zone", crEvery10MinBangkok, `{"CR":"DR=10; TZ=Asia/Bangkok; */10 * * * *","Name":"Test","Value":1111}`},
-		{"Every xmas morning in new york city", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
-		{"Every new year's day in bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
+		{"Every Xmas morning in NYC", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
+		{"Every New Year's Day in Bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -270,8 +270,8 @@ func TestTimeRange_String(t *testing.T) {
 		want   string
 	}{
 		{"From zero to zero", fields{zeroTime, zeroTime}, "[0001-01-01T00:00:00Z,0001-01-01T00:00:00Z]"},
-		{"First day of 2020 in utc", fields{firstSec2020Utc, firstSec2020Utc.AddDate(0, 0, 1)}, "[2020-01-01T00:00:00Z,2020-01-02T00:00:00Z]"},
-		{"First month of 2019 in bangkok", fields{firstSec2019Bangkok, firstSec2019Bangkok.AddDate(0, 1, 0)}, "[2019-01-01T00:00:00+07:00,2019-02-01T00:00:00+07:00]"},
+		{"First day of 2020 in UTC", fields{firstSec2020Utc, firstSec2020Utc.AddDate(0, 0, 1)}, "[2020-01-01T00:00:00Z,2020-01-02T00:00:00Z]"},
+		{"First month of 2019 in Bangkok", fields{firstSec2019Bangkok, firstSec2019Bangkok.AddDate(0, 1, 0)}, "[2019-01-01T00:00:00+07:00,2019-02-01T00:00:00+07:00]"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

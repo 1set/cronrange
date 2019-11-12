@@ -49,7 +49,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"First day of january in 2019 in honolulu",
+		{"First day of january in 2019 in Honolulu",
 			crFirstDayEachMonth,
 			args{parseTime(locationHonolulu, "2019-01-01 00:00:00").Add(-1 * time.Second), 1},
 			[]TimeRange{
@@ -57,7 +57,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"Second day of january in 2019 in bangkok (utc)",
+		{"Second day of january in 2019 in Bangkok (UTC view)",
 			crSecondDayEachMonthBangkok,
 			args{firstSec2019Local, 1},
 			[]TimeRange{
@@ -65,7 +65,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"Third day of january in 2019 in honolulu (bangkok)",
+		{"Third day of january in 2019 in Honolulu (Bangkok view)",
 			crThirdDayEachMonthHonolulu,
 			args{parseTime(locationBangkok, "2019-01-01 00:00:00"), 1},
 			[]TimeRange{
