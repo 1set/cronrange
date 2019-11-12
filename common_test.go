@@ -54,8 +54,14 @@ var (
 	crFirstHourFeb28OrSun, _       = New("0 0 28 2 0", "", 60)
 )
 
-type tempTestStruct struct {
+type tempTestWithPointer struct {
 	CR    *CronRange
+	Name  string
+	Value int
+}
+
+type tempTestWithInstance struct {
+	CR    CronRange
 	Name  string
 	Value int
 }

@@ -104,8 +104,13 @@ func BenchmarkParseString(b *testing.B) {
 }
 
 func TestCronRange_MarshalJSON(t *testing.T) {
-	tempStruct := tempTestStruct{
+	tempStructWithPointer := tempTestWithPointer{
 		nil,
+		"Test",
+		1111,
+	}
+	tempStructWithInstance := tempTestWithInstance{
+		CronRange{},
 		"Test",
 		1111,
 	}
@@ -124,15 +129,29 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tempStruct.CR = tt.cr
-			got, err := json.Marshal(tempStruct)
+			tempStructWithPointer.CR = tt.cr
+			got, err := json.Marshal(tempStructWithPointer)
 			if err != nil {
-				t.Errorf("Marshal() error = %v", err)
+				t.Errorf("Marshal() with pointer error = %v", err)
 				return
 			}
 			gotJ := string(got)
 			if gotJ != tt.wantJ {
-				t.Errorf("MarshalJSON() got = %v, want %v", gotJ, tt.wantJ)
+				t.Errorf("MarshalJSON() with pointer got = %v, want %v", gotJ, tt.wantJ)
+				return
+			}
+
+			if tt.cr != nil {
+				tempStructWithInstance.CR = *tt.cr
+				got, err := json.Marshal(tempStructWithInstance)
+				if err != nil {
+					t.Errorf("Marshal() with instance error = %v", err)
+					return
+				}
+				gotJ := string(got)
+				if gotJ != tt.wantJ {
+					t.Errorf("MarshalJSON() with instance got = %v, want %v", gotJ, tt.wantJ)
+				}
 			}
 		})
 	}
@@ -149,7 +168,7 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 	for _, tt := range deserializeTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			jsonFull := jsonPrefix + tt.inputS + jsonSuffix
-			var gotS tempTestStruct
+			var gotS tempTestWithPointer
 			err := json.Unmarshal([]byte(jsonFull), &gotS)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UnmarshalJSON() error: %v, wantErr: %v", err, tt.wantErr)
@@ -212,7 +231,7 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 
 func BenchmarkCronRange_UnmarshalJSON(b *testing.B) {
 	jsonFull := []byte(`{"CR":"DR=10;TZ=Pacific/Honolulu;* * * * *","Name":"Demo","Value":2222}`)
-	var gotS tempTestStruct
+	var gotS tempTestWithPointer
 	for i := 0; i < b.N; i++ {
 		_ = json.Unmarshal(jsonFull, &gotS)
 	}

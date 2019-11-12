@@ -92,9 +92,9 @@ func ParseString(s string) (cr *CronRange, err error) {
 }
 
 // MarshalJSON implements the encoding/json.Marshaler interface for serialization of CronRange.
-func (cr *CronRange) MarshalJSON() ([]byte, error) {
+func (cr CronRange) MarshalJSON() ([]byte, error) {
 	expr := cr.String()
-	if cr == nil || len(expr) == 0 {
+	if len(expr) == 0 {
 		return []byte("null"), nil
 	}
 	return json.Marshal(expr)
