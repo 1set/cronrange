@@ -13,6 +13,8 @@ func TestCronRange_IsWithin(t *testing.T) {
 		wantWithin bool
 		wantErr    bool
 	}{
+		{"Nil instance", "nil", parseLocalTime("2019-01-01 01:00:30"), false, true},
+		{"Empty instance", "empty", parseLocalTime("2019-01-01 01:00:30"), false, true},
 		{"Every 3rd minute - in", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 01:00:30"), true, false},
 		{"Every 3rd minute - out1", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 01:02:00"), false, false},
 		{"Every 3rd minute - out2", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 00:59:59"), false, false},
@@ -49,10 +51,17 @@ func TestCronRange_IsWithin(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cr, err := ParseString(tt.crExpr)
-			if err != nil {
-				t.Errorf("IsWithin() invalid crExpr: %q, error: %v", cr, err)
-				return
+			var cr *CronRange
+			if tt.crExpr == "nil" {
+				cr = nil
+			} else if tt.crExpr == "empty" {
+				cr = &CronRange{}
+			} else {
+				var err error
+				if cr, err = ParseString(tt.crExpr); err != nil {
+					t.Errorf("IsWithin() invalid crExpr: %q, error: %v", cr, err)
+					return
+				}
 			}
 
 			gotWithin, err := cr.IsWithin(tt.t)
