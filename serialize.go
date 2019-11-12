@@ -77,7 +77,7 @@ func ParseString(s string) (cr *CronRange, err error) {
 		} else if strings.HasPrefix(part, strMarkTimeZone) {
 			timeZone = part[len(strMarkTimeZone):]
 		} else {
-			err = fmt.Errorf(`json string has unknown part: %q`, part)
+			err = fmt.Errorf(`expression got unknown part: %q`, part)
 			return
 		}
 	}
@@ -92,9 +92,9 @@ func ParseString(s string) (cr *CronRange, err error) {
 }
 
 // MarshalJSON implements the encoding/json.Marshaler interface for serialization of CronRange.
-func (cr *CronRange) MarshalJSON() ([]byte, error) {
+func (cr CronRange) MarshalJSON() ([]byte, error) {
 	expr := cr.String()
-	if cr == nil || len(expr) == 0 {
+	if len(expr) == 0 {
 		return []byte("null"), nil
 	}
 	return json.Marshal(expr)
@@ -107,7 +107,7 @@ func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 	if len(raw) == 0 {
 		return errEmptyExpr
 	}
-	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation)) {
+	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation) && len(raw) >= 2) {
 		return errJSONNoQuotationFix
 	}
 

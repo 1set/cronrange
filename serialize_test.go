@@ -22,8 +22,8 @@ func TestCronRange_String(t *testing.T) {
 		{"5min duration without time zone", crEvery5Min, "DR=5; */5 * * * *"},
 		{"10min duration with local time zone", crEvery10MinLocal, "DR=10; */10 * * * *"},
 		{"10min duration with time zone", crEvery10MinBangkok, "DR=10; TZ=Asia/Bangkok; */10 * * * *"},
-		{"Every xmas morning in new york city", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
-		{"Every new year's day in bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
+		{"Every Xmas morning in NYC", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
+		{"Every New Year's Day in Bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -104,8 +104,13 @@ func BenchmarkParseString(b *testing.B) {
 }
 
 func TestCronRange_MarshalJSON(t *testing.T) {
-	tempStruct := tempTestStruct{
+	tempStructWithPointer := tempTestWithPointer{
 		nil,
+		"Test",
+		1111,
+	}
+	tempStructWithInstance := tempTestWithInstance{
+		CronRange{},
 		"Test",
 		1111,
 	}
@@ -119,20 +124,34 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 		{"5min duration without time zone", crEvery5Min, `{"CR":"DR=5; */5 * * * *","Name":"Test","Value":1111}`},
 		{"10min duration with local time zone", crEvery10MinLocal, `{"CR":"DR=10; */10 * * * *","Name":"Test","Value":1111}`},
 		{"10min duration with time zone", crEvery10MinBangkok, `{"CR":"DR=10; TZ=Asia/Bangkok; */10 * * * *","Name":"Test","Value":1111}`},
-		{"Every xmas morning in new york city", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
-		{"Every new year's day in bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
+		{"Every Xmas morning in NYC", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
+		{"Every New Year's Day in Bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tempStruct.CR = tt.cr
-			got, err := json.Marshal(tempStruct)
+			tempStructWithPointer.CR = tt.cr
+			got, err := json.Marshal(tempStructWithPointer)
 			if err != nil {
-				t.Errorf("Marshal() error = %v", err)
+				t.Errorf("Marshal() with pointer error = %v", err)
 				return
 			}
 			gotJ := string(got)
 			if gotJ != tt.wantJ {
-				t.Errorf("MarshalJSON() got = %v, want %v", gotJ, tt.wantJ)
+				t.Errorf("MarshalJSON() with pointer got = %v, want %v", gotJ, tt.wantJ)
+				return
+			}
+
+			if tt.cr != nil {
+				tempStructWithInstance.CR = *tt.cr
+				got, err := json.Marshal(tempStructWithInstance)
+				if err != nil {
+					t.Errorf("Marshal() with instance error = %v", err)
+					return
+				}
+				gotJ := string(got)
+				if gotJ != tt.wantJ {
+					t.Errorf("MarshalJSON() with instance got = %v, want %v", gotJ, tt.wantJ)
+				}
 			}
 		})
 	}
@@ -149,18 +168,33 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 	for _, tt := range deserializeTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			jsonFull := jsonPrefix + tt.inputS + jsonSuffix
-			var gotS tempTestStruct
-			err := json.Unmarshal([]byte(jsonFull), &gotS)
+			var gotSP tempTestWithPointer
+			err := json.Unmarshal([]byte(jsonFull), &gotSP)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("UnmarshalJSON() error: %v, wantErr: %v", err, tt.wantErr)
+				t.Errorf("UnmarshalJSON() with pointer error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && (gotS.CR == nil || gotS.CR.schedule == nil || gotS.CR.duration == 0) {
-				t.Errorf("UnmarshalJSON() incomplete gotCr: %v", gotS.CR)
+			if !tt.wantErr && (gotSP.CR == nil || gotSP.CR.schedule == nil || gotSP.CR.duration == 0) {
+				t.Errorf("UnmarshalJSON() with pointer incomplete gotCr: %v", gotSP.CR)
 				return
 			}
-			if !tt.wantErr && gotS.CR.String() != tt.wantS {
-				t.Errorf("UnmarshalJSON() gotCr: %s, want: %s", gotS.CR.String(), tt.wantS)
+			if !tt.wantErr && gotSP.CR.String() != tt.wantS {
+				t.Errorf("UnmarshalJSON() with pointer gotCr: %s, want: %s", gotSP.CR.String(), tt.wantS)
+				return
+			}
+
+			var gotSI tempTestWithInstance
+			err = json.Unmarshal([]byte(jsonFull), &gotSI)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UnmarshalJSON() with instance error: %v, wantErr: %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && (gotSI.CR.schedule == nil || gotSI.CR.duration == 0) {
+				t.Errorf("UnmarshalJSON() with instance incomplete gotCr: %v", gotSI.CR)
+				return
+			}
+			if !tt.wantErr && gotSI.CR.String() != tt.wantS {
+				t.Errorf("UnmarshalJSON() with instance gotCr: %s, want: %s", gotSI.CR.String(), tt.wantS)
 				return
 			}
 
@@ -180,9 +214,37 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 				jsonPrefix + jsonSuffix + tt.inputS,
 			}
 			for _, jsonBroken := range jsonBrokens {
-				if err = json.Unmarshal([]byte(jsonBroken), &gotS); err == nil {
-					t.Errorf("UnmarshalJSON() missing error for broken json: %s", jsonBroken)
+				var gotSP tempTestWithPointer
+				if err = json.Unmarshal([]byte(jsonBroken), &gotSP); err == nil {
+					t.Errorf("UnmarshalJSON() with pointer missing error for broken json: %s", jsonBroken)
 					return
+				}
+
+				var gotSI tempTestWithInstance
+				if err = json.Unmarshal([]byte(jsonBroken), &gotSI); err == nil {
+					t.Errorf("UnmarshalJSON() with instance missing error for broken json: %s", jsonBroken)
+					return
+				}
+			}
+
+			directExprs := []string{
+				`"` + tt.inputS + `"`,
+				tt.inputS,
+				`"` + tt.inputS,
+				tt.inputS + `"`,
+			}
+			for idx, directExpr := range directExprs {
+				var gotCr CronRange
+				err := gotCr.UnmarshalJSON([]byte(directExpr))
+				if idx == 0 {
+					if gotCr.String() != tt.wantS {
+						t.Errorf("UnmarshalJSON() directly gotCr: %v, want: %s, expr: %q", gotCr, tt.wantS, directExpr)
+						return
+					}
+				} else {
+					if err == nil {
+						t.Errorf("UnmarshalJSON() got nil err for: %q", directExpr)
+					}
 				}
 			}
 		})
@@ -191,7 +253,7 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 
 func BenchmarkCronRange_UnmarshalJSON(b *testing.B) {
 	jsonFull := []byte(`{"CR":"DR=10;TZ=Pacific/Honolulu;* * * * *","Name":"Demo","Value":2222}`)
-	var gotS tempTestStruct
+	var gotS tempTestWithPointer
 	for i := 0; i < b.N; i++ {
 		_ = json.Unmarshal(jsonFull, &gotS)
 	}
@@ -208,8 +270,8 @@ func TestTimeRange_String(t *testing.T) {
 		want   string
 	}{
 		{"From zero to zero", fields{zeroTime, zeroTime}, "[0001-01-01T00:00:00Z,0001-01-01T00:00:00Z]"},
-		{"First day of 2020 in utc", fields{firstSec2020Utc, firstSec2020Utc.AddDate(0, 0, 1)}, "[2020-01-01T00:00:00Z,2020-01-02T00:00:00Z]"},
-		{"First month of 2019 in bangkok", fields{firstSec2019Bangkok, firstSec2019Bangkok.AddDate(0, 1, 0)}, "[2019-01-01T00:00:00+07:00,2019-02-01T00:00:00+07:00]"},
+		{"First day of 2020 in UTC", fields{firstSec2020Utc, firstSec2020Utc.AddDate(0, 0, 1)}, "[2020-01-01T00:00:00Z,2020-01-02T00:00:00Z]"},
+		{"First month of 2019 in Bangkok", fields{firstSec2019Bangkok, firstSec2019Bangkok.AddDate(0, 1, 0)}, "[2019-01-01T00:00:00+07:00,2019-02-01T00:00:00+07:00]"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

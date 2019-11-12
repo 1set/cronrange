@@ -11,6 +11,7 @@ func (cr *CronRange) IsWithin(t time.Time) (within bool, err error) {
 		return
 	} else if cr.schedule == nil || cr.duration < 0 {
 		err = errInvalidCronRange
+		return
 	}
 
 	searchStart := t.Add(-(cr.duration + 1*time.Second))
