@@ -168,18 +168,33 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 	for _, tt := range deserializeTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			jsonFull := jsonPrefix + tt.inputS + jsonSuffix
-			var gotS tempTestWithPointer
-			err := json.Unmarshal([]byte(jsonFull), &gotS)
+			var gotSP tempTestWithPointer
+			err := json.Unmarshal([]byte(jsonFull), &gotSP)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("UnmarshalJSON() error: %v, wantErr: %v", err, tt.wantErr)
+				t.Errorf("UnmarshalJSON() with pointer error: %v, wantErr: %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && (gotS.CR == nil || gotS.CR.schedule == nil || gotS.CR.duration == 0) {
-				t.Errorf("UnmarshalJSON() incomplete gotCr: %v", gotS.CR)
+			if !tt.wantErr && (gotSP.CR == nil || gotSP.CR.schedule == nil || gotSP.CR.duration == 0) {
+				t.Errorf("UnmarshalJSON() with pointer incomplete gotCr: %v", gotSP.CR)
 				return
 			}
-			if !tt.wantErr && gotS.CR.String() != tt.wantS {
-				t.Errorf("UnmarshalJSON() gotCr: %s, want: %s", gotS.CR.String(), tt.wantS)
+			if !tt.wantErr && gotSP.CR.String() != tt.wantS {
+				t.Errorf("UnmarshalJSON() with pointer gotCr: %s, want: %s", gotSP.CR.String(), tt.wantS)
+				return
+			}
+
+			var gotSI tempTestWithInstance
+			err = json.Unmarshal([]byte(jsonFull), &gotSI)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UnmarshalJSON() with instance error: %v, wantErr: %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && (gotSI.CR.schedule == nil || gotSI.CR.duration == 0) {
+				t.Errorf("UnmarshalJSON() with instance incomplete gotCr: %v", gotSI.CR)
+				return
+			}
+			if !tt.wantErr && gotSI.CR.String() != tt.wantS {
+				t.Errorf("UnmarshalJSON() with instance gotCr: %s, want: %s", gotSI.CR.String(), tt.wantS)
 				return
 			}
 
@@ -199,8 +214,15 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 				jsonPrefix + jsonSuffix + tt.inputS,
 			}
 			for _, jsonBroken := range jsonBrokens {
-				if err = json.Unmarshal([]byte(jsonBroken), &gotS); err == nil {
-					t.Errorf("UnmarshalJSON() missing error for broken json: %s", jsonBroken)
+				var gotSP tempTestWithPointer
+				if err = json.Unmarshal([]byte(jsonBroken), &gotSP); err == nil {
+					t.Errorf("UnmarshalJSON() with pointer missing error for broken json: %s", jsonBroken)
+					return
+				}
+
+				var gotSI tempTestWithInstance
+				if err = json.Unmarshal([]byte(jsonBroken), &gotSI); err == nil {
+					t.Errorf("UnmarshalJSON() with instance missing error for broken json: %s", jsonBroken)
 					return
 				}
 			}
