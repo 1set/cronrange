@@ -17,31 +17,31 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 		wantOccurs []TimeRange
 		wantErr    bool
 	}{
-		{"nil struct",
+		{"Nil struct",
 			crNil,
 			args{firstSec2019Local, 1},
 			nil,
 			true,
 		},
-		{"empty struct",
+		{"Empty struct",
 			crEmpty,
 			args{firstSec2019Local, 1},
 			nil,
 			true,
 		},
-		{"zero count",
+		{"Zero count",
 			crFirstDayEachMonth,
 			args{firstSec2019Local, 0},
 			nil,
 			true,
 		},
-		{"negative count",
+		{"Negative count",
 			crFirstDayEachMonth,
 			args{firstSec2019Local, -5},
 			nil,
 			true,
 		},
-		{"first day of january in 2019",
+		{"First day of january in 2019",
 			crFirstDayEachMonth,
 			args{lastSec2018Local, 1},
 			[]TimeRange{
@@ -49,7 +49,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"first day of january in 2019 in honolulu",
+		{"First day of january in 2019 in honolulu",
 			crFirstDayEachMonth,
 			args{parseTime(locationHonolulu, "2019-01-01 00:00:00").Add(-1 * time.Second), 1},
 			[]TimeRange{
@@ -57,7 +57,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"second day of january in 2019 in bangkok (utc)",
+		{"Second day of january in 2019 in bangkok (utc)",
 			crSecondDayEachMonthBangkok,
 			args{firstSec2019Local, 1},
 			[]TimeRange{
@@ -65,7 +65,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"third day of january in 2019 in honolulu (bangkok)",
+		{"Third day of january in 2019 in honolulu (bangkok)",
 			crThirdDayEachMonthHonolulu,
 			args{parseTime(locationBangkok, "2019-01-01 00:00:00"), 1},
 			[]TimeRange{
@@ -73,7 +73,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"first day of first three months in 2019",
+		{"First day of first three months in 2019",
 			crFirstDayEachMonth,
 			args{lastSec2018Local, 3},
 			[]TimeRange{
@@ -83,7 +83,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"first hour of feb 29 since 2012",
+		{"First hour of feb 29 since 2012",
 			crFirstHourFeb29,
 			args{firstSec2012Local, 3},
 			[]TimeRange{
@@ -93,7 +93,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"first hour of feb 28 or sunday since 2016",
+		{"First hour of feb 28 or sunday since 2016",
 			crFirstHourFeb28OrSun,
 			args{firstSec2016Local, 6},
 			[]TimeRange{
@@ -106,7 +106,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"first days of jan with overlap in 2012",
+		{"First days of jan with overlap in 2012",
 			crEveryDayWithOverlap,
 			args{firstSec2012Local, 5},
 			[]TimeRange{
@@ -118,7 +118,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			},
 			false,
 		},
-		{"very complicated time periods since 2017",
+		{"Very complicated time periods since 2017",
 			crVeryComplicated,
 			args{firstSec2017Honolulu, 5},
 			[]TimeRange{
