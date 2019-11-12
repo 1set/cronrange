@@ -185,6 +185,27 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 					return
 				}
 			}
+
+			directExprs := []string{
+				`"` + tt.inputS + `"`,
+				tt.inputS,
+				`"` + tt.inputS,
+				tt.inputS + `"`,
+			}
+			for idx, directExpr := range directExprs {
+				var gotCr CronRange
+				err := gotCr.UnmarshalJSON([]byte(directExpr))
+				if idx == 0 {
+					if gotCr.String() != tt.wantS {
+						t.Errorf("UnmarshalJSON() directly gotCr: %v, want: %s, expr: %q", gotCr, tt.wantS, directExpr)
+						return
+					}
+				} else {
+					if err == nil {
+						t.Errorf("UnmarshalJSON() got nil err for: %q", directExpr)
+					}
+				}
+			}
 		})
 	}
 }
