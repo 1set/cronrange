@@ -60,14 +60,6 @@ type tempTestStruct struct {
 	Value int
 }
 
-func getLocalTime(year, month, day, hour, minute int) time.Time {
-	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.Local)
-}
-
-func getTime(location *time.Location, year, month, day, hour, minute int) time.Time {
-	return time.Date(year, time.Month(month), day, hour, minute, 0, 0, location)
-}
-
 func parseLocalTime(s string) time.Time {
 	t, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local)
 	if err != nil {
