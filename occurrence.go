@@ -13,14 +13,15 @@ var (
 
 // NextOccurrences returns the next occurrence time ranges, later than the given time.
 func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange, err error) {
-	if count <= 0 {
+	// Precondition checks
+	switch {
+	case count <= 0:
 		err = errZeroOrNegCount
-	} else if cr == nil {
+	case cr == nil:
 		err = errNilCronRange
-	} else if cr.schedule == nil || cr.duration < 0 {
+	case cr.schedule == nil || cr.duration < 0:
 		err = errInvalidCronRange
 	}
-
 	if err != nil {
 		return
 	}
