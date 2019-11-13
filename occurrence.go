@@ -19,7 +19,7 @@ func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange
 		err = errZeroOrNegCount
 	case cr == nil:
 		err = errNilCronRange
-	case cr.schedule == nil || cr.duration < 0:
+	case cr.schedule == nil, cr.duration < 0:
 		err = errInvalidCronRange
 	}
 	if err != nil {

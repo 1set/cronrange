@@ -80,7 +80,6 @@ func ParseString(s string) (cr *CronRange, err error) {
 			timeZone = part[len(strMarkTimeZone):]
 		default:
 			err = fmt.Errorf(`expression got unknown part: %q`, part)
-			break
 		}
 	}
 
