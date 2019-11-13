@@ -23,7 +23,8 @@ func TestNew(t *testing.T) {
 		{"Zero durationMin", args{exprEveryMin, emptyString, 0}, false, true},
 		{"Normal without time zone", args{exprEveryMin, emptyString, 5}, true, false},
 		{"Normal with local time zone", args{exprEveryMin, " Local ", 5}, true, false},
-		{"Normal with time zone", args{exprEveryMin, timeZoneBangkok, 5}, true, false},
+		{"Normal with 5 min in Bangkok", args{exprEveryMin, timeZoneBangkok, 5}, true, false},
+		{"Normal with 1 day in Tokyo", args{exprEveryNewYear, timeZoneTokyo, 1440}, true, false},
 		{"Normal with large duration", args{exprEveryMin, timeZoneBangkok, 5259000}, true, false},
 		{"Normal with complicated cron expression", args{exprVeryComplicated, timeZoneHonolulu, 5258765}, true, false},
 	}

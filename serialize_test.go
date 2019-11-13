@@ -24,6 +24,7 @@ func TestCronRange_String(t *testing.T) {
 		{"10min duration with time zone", crEvery10MinBangkok, "DR=10; TZ=Asia/Bangkok; */10 * * * *"},
 		{"Every Xmas morning in NYC", crEveryXmasMorningNYC, "DR=240; TZ=America/New_York; 0 8 25 12 *"},
 		{"Every New Year's Day in Bangkok", crEveryNewYearsDayBangkok, "DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *"},
+		{"Every New Year's Day in Tokyo", crEveryNewYearsDayTokyo, "DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -69,6 +70,7 @@ var deserializeTestCases = []struct {
 	{"Normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false},
 	{"Normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false},
 	{"Normal with empty parts", ";  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false},
+	{"Normal with different order", "TZ=Asia/Tokyo;  DR=1440;  0 0 1 1 *", "DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *", false},
 	{"Normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false},
 	{"Normal with UTC time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false},
 	{"Normal with Honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
@@ -126,6 +128,7 @@ func TestCronRange_MarshalJSON(t *testing.T) {
 		{"10min duration with time zone", crEvery10MinBangkok, `{"CR":"DR=10; TZ=Asia/Bangkok; */10 * * * *","Name":"Test","Value":1111}`},
 		{"Every Xmas morning in NYC", crEveryXmasMorningNYC, `{"CR":"DR=240; TZ=America/New_York; 0 8 25 12 *","Name":"Test","Value":1111}`},
 		{"Every New Year's Day in Bangkok", crEveryNewYearsDayBangkok, `{"CR":"DR=1440; TZ=Asia/Bangkok; 0 0 1 1 *","Name":"Test","Value":1111}`},
+		{"Every New Year's Day in Tokyo", crEveryNewYearsDayTokyo, `{"CR":"DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *","Name":"Test","Value":1111}`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
