@@ -111,3 +111,21 @@ func ExampleCronRange_MarshalJSON() {
 
 	// Output: {"Expr":"DR=240; TZ=America/New_York; 0 8 1 1 *","Num":42,"Goal":"Morning"}
 }
+
+// This example demonstrates deserializing JSON to a struct containing CronRange.
+func ExampleCronRange_UnmarshalJSON() {
+	js := `{"Expr":"DR=240; TZ=America/New_York; 0 8 1 1 *","Num":43,"Goal":"Morning"}`
+	ss := struct {
+		Expr *cronrange.CronRange
+		Num  int
+		Goal string
+	}{}
+
+	if err := json.Unmarshal([]byte(js), &ss); err == nil {
+		fmt.Println(ss)
+	} else {
+		fmt.Println("got unmarshal err:", err)
+	}
+
+	// Output: {DR=240; TZ=America/New_York; 0 8 1 1 * 43 Morning}
+}
