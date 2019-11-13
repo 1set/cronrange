@@ -14,6 +14,7 @@ var (
 	exprEveryNewYear     = "0 0 1 1 *"
 	exprVeryComplicated  = "4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5"
 	timeZoneBangkok      = "Asia/Bangkok"
+	timeZoneTokyo        = "Asia/Tokyo"
 	timeZoneNewYork      = "America/New_York"
 	timeZoneHonolulu     = "Pacific/Honolulu"
 	timeZoneUTC          = "Etc/UTC"
@@ -21,6 +22,7 @@ var (
 
 var (
 	locationBangkok, _  = time.LoadLocation(timeZoneBangkok)
+	locationTokyo, _    = time.LoadLocation(timeZoneTokyo)
 	locationHonolulu, _ = time.LoadLocation(timeZoneHonolulu)
 	locationUTC, _      = time.LoadLocation(timeZoneUTC)
 )
@@ -32,6 +34,7 @@ var (
 	firstSec2016Local    = time.Date(2016, 1, 1, 0, 0, 0, 0, time.Local)
 	firstSec2019Local    = time.Date(2019, 1, 1, 0, 0, 0, 0, time.Local)
 	firstSec2019Bangkok  = time.Date(2019, 1, 1, 0, 0, 0, 0, locationBangkok)
+	firstSec2018Tokyo    = time.Date(2018, 1, 1, 0, 0, 0, 0, locationTokyo)
 	firstSec2017Honolulu = time.Date(2017, 1, 1, 0, 0, 0, 0, locationHonolulu)
 	lastSec2018Local     = firstSec2019Local.Add(-1 * time.Second)
 )
@@ -46,6 +49,7 @@ var (
 	crEveryDayWithOverlap, _       = New(exprEveryDay, emptyString, 60*24*2)
 	crEveryXmasMorningNYC, _       = New(exprEveryXmasMorning, timeZoneNewYork, 240)
 	crEveryNewYearsDayBangkok, _   = New(exprEveryNewYear, timeZoneBangkok, 1440)
+	crEveryNewYearsDayTokyo, _     = New(exprEveryNewYear, timeZoneTokyo, 1440)
 	crVeryComplicated, _           = New(exprVeryComplicated, timeZoneHonolulu, 1357)
 	crFirstDayEachMonth, _         = New("0 0 1 * *", "", 1440)
 	crSecondDayEachMonthBangkok, _ = New("0 0 2 * *", timeZoneBangkok, 1440)
