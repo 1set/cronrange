@@ -52,11 +52,12 @@ func TestCronRange_IsWithin(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var cr *CronRange
-			if tt.crExpr == "nil" {
+			switch {
+			case tt.crExpr == "nil":
 				cr = nil
-			} else if tt.crExpr == "empty" {
+			case tt.crExpr == "empty":
 				cr = &CronRange{}
-			} else {
+			default:
 				var err error
 				if cr, err = ParseString(tt.crExpr); err != nil {
 					t.Errorf("IsWithin() invalid crExpr: %q, error: %v", cr, err)
