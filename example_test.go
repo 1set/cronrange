@@ -1,6 +1,7 @@
 package cronrange_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -87,4 +88,26 @@ func ExampleCronRange_IsWithin() {
 			break
 		}
 	}
+}
+
+// This example demonstrates serializing a struct containing CronRange to JSON.
+func ExampleCronRange_MarshalJSON() {
+	cr, err := cronrange.ParseString("DR=240;TZ=America/New_York;0 8 1 1 *")
+	if err != nil {
+		fmt.Println("got parse err:", err)
+		return
+	}
+	ss := struct {
+		Expr *cronrange.CronRange
+		Num  int
+		Goal string
+	}{cr, 42, "Morning"}
+
+	if bytes, err := json.Marshal(ss); err == nil {
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println("got marshal err:", err)
+	}
+
+	// Output: {"Expr":"DR=240; TZ=America/New_York; 0 8 1 1 *","Num":42,"Goal":"Morning"}
 }
