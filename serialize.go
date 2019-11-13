@@ -60,6 +60,7 @@ func ParseString(s string) (cr *CronRange, err error) {
 		return
 	}
 
+PL:
 	for idx, part := range parts {
 		part = strings.TrimSpace(part)
 		// skip empty part
@@ -74,7 +75,7 @@ func ParseString(s string) (cr *CronRange, err error) {
 		case strings.HasPrefix(part, strMarkDuration):
 			durStr = part[len(strMarkDuration):]
 			if durMin, err = strconv.ParseUint(durStr, 10, 64); err != nil {
-				break
+				break PL
 			}
 		case strings.HasPrefix(part, strMarkTimeZone):
 			timeZone = part[len(strMarkTimeZone):]
