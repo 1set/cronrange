@@ -7,6 +7,53 @@ import (
 	"github.com/1set/cronrange"
 )
 
+// This example creates an instance representing every New Year's Day in Tokyo.
+func ExampleNew() {
+	cr, err := cronrange.New("0 0 1 1 *", "Asia/Tokyo", 60*24)
+	if err != nil {
+		fmt.Println("fail to create:", err)
+		return
+	}
+
+	fmt.Println(cr)
+	// Output: DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *
+}
+
+// This example creates an instance with an expression representing every New Year's Day in Tokyo.
+func ExampleParseString() {
+	cr, err := cronrange.ParseString("DR=1440;TZ=Asia/Tokyo;0 0 1 1 *")
+	if err != nil {
+		fmt.Println("fail to create:", err)
+		return
+	}
+
+	fmt.Println(cr)
+	// Output: DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *
+}
+
+// This example lists next 5 daily happy hours of Lava Lava Beach Club after 2019.11.09.
+func ExampleCronRange_NextOccurrences() {
+	cr, err := cronrange.New("0 15 * * *", "Pacific/Honolulu", 120)
+	if err != nil {
+		fmt.Println("fail to create:", err)
+		return
+	}
+
+	loc, _ := time.LoadLocation("Pacific/Honolulu")
+	currTime := time.Date(2019, 11, 9, 16, 55, 0, 0, loc)
+	happyHours, err := cr.NextOccurrences(currTime, 5)
+	for _, happyHour := range happyHours {
+		fmt.Println(happyHour)
+	}
+
+	// Output:
+	// [2019-11-10T15:00:00-10:00,2019-11-10T17:00:00-10:00]
+	// [2019-11-11T15:00:00-10:00,2019-11-11T17:00:00-10:00]
+	// [2019-11-12T15:00:00-10:00,2019-11-12T17:00:00-10:00]
+	// [2019-11-13T15:00:00-10:00,2019-11-13T17:00:00-10:00]
+	// [2019-11-14T15:00:00-10:00,2019-11-14T17:00:00-10:00]
+}
+
 // This example shows greeting according to your local box time.
 func ExampleCronRange_IsWithin() {
 	crGreetings := make(map[*cronrange.CronRange]string)
@@ -40,27 +87,4 @@ func ExampleCronRange_IsWithin() {
 			break
 		}
 	}
-}
-
-// This example lists next 5 daily happy hours of Lava Lava Beach Club after 2019.11.09.
-func ExampleCronRange_NextOccurrences() {
-	cr, err := cronrange.New("0 15 * * *", "Pacific/Honolulu", 120)
-	if err != nil {
-		fmt.Println("fail to create:", err)
-		return
-	}
-
-	loc, _ := time.LoadLocation("Pacific/Honolulu")
-	currTime := time.Date(2019, 11, 9, 16, 55, 0, 0, loc)
-	happyHours, err := cr.NextOccurrences(currTime, 5)
-	for _, happyHour := range happyHours {
-		fmt.Println(happyHour)
-	}
-
-	// Output:
-	// [2019-11-10T15:00:00-10:00,2019-11-10T17:00:00-10:00]
-	// [2019-11-11T15:00:00-10:00,2019-11-11T17:00:00-10:00]
-	// [2019-11-12T15:00:00-10:00,2019-11-12T17:00:00-10:00]
-	// [2019-11-13T15:00:00-10:00,2019-11-13T17:00:00-10:00]
-	// [2019-11-14T15:00:00-10:00,2019-11-14T17:00:00-10:00]
 }
