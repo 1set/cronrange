@@ -41,3 +41,26 @@ func ExampleCronRange_IsWithin() {
 		}
 	}
 }
+
+// This example lists next 5 daily happy hours of Lava Lava Beach Club after 2019.11.09.
+func ExampleCronRange_NextOccurrences() {
+	cr, err := cronrange.New("0 15 * * *", "Pacific/Honolulu", 120)
+	if err != nil {
+		fmt.Println("fail to create:", err)
+		return
+	}
+
+	loc, _ := time.LoadLocation("Pacific/Honolulu")
+	currTime := time.Date(2019, 11, 9, 16, 55, 0, 0, loc)
+	happyHours, err := cr.NextOccurrences(currTime, 5)
+	for _, happyHour := range happyHours {
+		fmt.Println(happyHour)
+	}
+
+	// Output:
+	// [2019-11-10T15:00:00-10:00,2019-11-10T17:00:00-10:00]
+	// [2019-11-11T15:00:00-10:00,2019-11-11T17:00:00-10:00]
+	// [2019-11-12T15:00:00-10:00,2019-11-12T17:00:00-10:00]
+	// [2019-11-13T15:00:00-10:00,2019-11-13T17:00:00-10:00]
+	// [2019-11-14T15:00:00-10:00,2019-11-14T17:00:00-10:00]
+}
