@@ -8,7 +8,7 @@ import (
 )
 
 // This example shows greeting according to your local box time.
-func Example() {
+func ExampleCronRange_IsWithin() {
 	crGreetings := make(map[*cronrange.CronRange]string)
 	crExprGreetings := map[string]string{
 		"DR=360; 0 6 * * *":  "Good morning!",
@@ -18,6 +18,7 @@ func Example() {
 		"DR=300; 0 1 * * *":  "ZzzZZzzzZZZz...",
 	}
 
+	// create cronrange from expressions
 	for crExpr, greeting := range crExprGreetings {
 		if cr, err := cronrange.ParseString(crExpr); err == nil {
 			crGreetings[cr] = greeting
@@ -27,6 +28,7 @@ func Example() {
 		}
 	}
 
+	// check if current time fails in any time range
 	current := time.Now()
 	for cr, greeting := range crGreetings {
 		if isWithin, err := cr.IsWithin(current); err == nil {
@@ -35,7 +37,7 @@ func Example() {
 			}
 		} else {
 			fmt.Println("got check err:", err)
-			return
+			break
 		}
 	}
 }
