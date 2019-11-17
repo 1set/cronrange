@@ -9,7 +9,7 @@
 
 cronrange is a Go package for _time range expression_ in _cron_ style, or rather:
 
-> cronrange := cron + timerange
+> CronRange := Cron + TimeRange
 
 for example, every New Year's Day in Tokyo can be written as:
 
