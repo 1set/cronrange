@@ -37,6 +37,8 @@ And import it in your program as:
 import "github.com/1set/cronrange"
 ```
 
+Examples can be found in [GoDoc](https://godoc.org/github.com/1set/cronrange#pkg-examples).
+
 ## License
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2F1set%2Fcronrange.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2F1set%2Fcronrange?ref=badge_large)
