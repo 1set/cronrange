@@ -42,8 +42,7 @@ func ExampleCronRange_NextOccurrences() {
 
 	loc, _ := time.LoadLocation("Pacific/Honolulu")
 	currTime := time.Date(2019, 11, 9, 16, 55, 0, 0, loc)
-	happyHours, err := cr.NextOccurrences(currTime, 5)
-	for _, happyHour := range happyHours {
+	for _, happyHour := range cr.NextOccurrences(currTime, 5) {
 		fmt.Println(happyHour)
 	}
 
@@ -79,13 +78,8 @@ func ExampleCronRange_IsWithin() {
 	// check if current time fails in any time range
 	current := time.Now()
 	for cr, greeting := range crGreetings {
-		if isWithin, err := cr.IsWithin(current); err == nil {
-			if isWithin {
-				fmt.Println(greeting)
-			}
-		} else {
-			fmt.Println("got check err:", err)
-			break
+		if cr.IsWithin(current) {
+			fmt.Println(greeting)
 		}
 	}
 }

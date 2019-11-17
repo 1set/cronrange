@@ -42,6 +42,7 @@ var (
 var (
 	crNil                          *CronRange
 	crEmpty                        = &CronRange{}
+	crIncomplete                   = &CronRange{duration: 5}
 	crEvery1Min, _                 = New(exprEveryMin, emptyString, 1)
 	crEvery5Min, _                 = New(exprEvery5Min, emptyString, 5)
 	crEvery10MinLocal, _           = New(exprEvery10Min, emptyString, 10)

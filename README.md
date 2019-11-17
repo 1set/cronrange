@@ -7,21 +7,35 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ef272059b4044252b0097270b48d5703)](https://www.codacy.com/manual/an9an63/cronrange)
 [![Codecov](https://codecov.io/gh/1set/cronrange/branch/master/graph/badge.svg)](https://codecov.io/gh/1set/cronrange)
 
-cronrange is a Go package for _time range expression_ in _cron_ style, or rather:
+cronrange is a Go package for _time range expression_ in _Cron_ style.
 
-> cronrange := cron + timerange
+In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic time ranges, i.e. **Cron** for Time**Range**.
 
-for example, every New Year's Day in Tokyo can be written as:
+For example, every New Year's Day in Tokyo can be written as:
 
 ```cron
 DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *
 ```
 
+It consists of three parts separated by a semicolon:
+
 -   `DR=1440` stands for duration in minutes, 60 \* 24 = 1440 min;
 -   `TZ=Asia/Tokyo` is optional and for time zone using name in [IANA Time Zone database](https://www.iana.org/time-zones);
 -   `0 0 1 1 *` is a cron expression representing the beginning of the time range.
 
-* * *
+## Usage
+
+To download the package:
+
+```bash
+go get -u github.com/1set/cronrange
+```
+
+And import it in your program as:
+
+```go
+import "github.com/1set/cronrange"
+```
 
 ## License
 

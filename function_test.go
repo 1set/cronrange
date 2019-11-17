@@ -29,6 +29,12 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			nil,
 			true,
 		},
+		{"Incomplete struct",
+			crIncomplete,
+			args{firstSec2019Local, 1},
+			nil,
+			true,
+		},
 		{"Zero count",
 			crFirstDayEachMonth,
 			args{firstSec2019Local, 0},
@@ -143,11 +149,13 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotOccurs, err := tt.cr.NextOccurrences(tt.args.t, tt.args.count)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NextOccurrences() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			defer func() {
+				if r := recover(); (r != nil) != tt.wantErr {
+					t.Errorf("NextOccurrences() panic = %v, wantErr %v", r, tt.wantErr)
+				}
+			}()
+
+			gotOccurs := tt.cr.NextOccurrences(tt.args.t, tt.args.count)
 			if !isTimeRangeSliceEqual(gotOccurs, tt.wantOccurs) {
 				t.Errorf("NextOccurrences() gotOccurs = %v, want %v", gotOccurs, tt.wantOccurs)
 			}
@@ -157,7 +165,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 
 func BenchmarkCronRange_NextOccurrences(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = crEvery10MinBangkok.NextOccurrences(firstSec2019Local, 10)
+		_ = crEvery10MinBangkok.NextOccurrences(firstSec2019Local, 10)
 	}
 }
 
@@ -171,6 +179,7 @@ func TestCronRange_IsWithin(t *testing.T) {
 	}{
 		{"Nil instance", "nil", parseLocalTime("2019-01-01 01:00:30"), false, true},
 		{"Empty instance", "empty", parseLocalTime("2019-01-01 01:00:30"), false, true},
+		{"Incomplete instance", "incomplete", parseLocalTime("2019-01-01 01:00:30"), false, true},
 		{"Every 3rd minute - in", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 01:00:30"), true, false},
 		{"Every 3rd minute - out1", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 01:02:00"), false, false},
 		{"Every 3rd minute - out2", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 00:59:59"), false, false},
@@ -207,12 +216,20 @@ func TestCronRange_IsWithin(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				if r := recover(); (r != nil) != tt.wantErr {
+					t.Errorf("IsWithin() panic = %v, wantErr %v", r, tt.wantErr)
+				}
+			}()
+
 			var cr *CronRange
 			switch {
 			case tt.crExpr == "nil":
-				cr = nil
+				cr = crNil
 			case tt.crExpr == "empty":
-				cr = &CronRange{}
+				cr = crEmpty
+			case tt.crExpr == "incomplete":
+				cr = crIncomplete
 			default:
 				var err error
 				if cr, err = ParseString(tt.crExpr); err != nil {
@@ -221,11 +238,7 @@ func TestCronRange_IsWithin(t *testing.T) {
 				}
 			}
 
-			gotWithin, err := cr.IsWithin(tt.t)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("IsWithin() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			gotWithin := cr.IsWithin(tt.t)
 			if gotWithin != tt.wantWithin {
 				t.Errorf("IsWithin() gotWithin = %v, want %v", gotWithin, tt.wantWithin)
 			}
@@ -235,6 +248,6 @@ func TestCronRange_IsWithin(t *testing.T) {
 
 func BenchmarkCronRange_IsWithin(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = crEvery10MinBangkok.IsWithin(firstSec2019Bangkok)
+		_ = crEvery10MinBangkok.IsWithin(firstSec2019Bangkok)
 	}
 }
