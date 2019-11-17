@@ -1,5 +1,5 @@
 /*
-Package cronrange parses cron-style time range expressions.
+Package cronrange parses Cron-style time range expressions.
 
 In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic
 time ranges.
