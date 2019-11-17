@@ -9,7 +9,7 @@
 
 cronrange is a Go package for _time range expression_ in _Cron_ style.
 
-In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic time ranges, i.e. **Cron** for Time**Range**.
+In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic time ranges, i.e. **Cron** for Time**Range**. And it made easier to tell if the moment falls within the any time ranges, and what's the next occurrence.
 
 For example, every New Year's Day in Tokyo can be written as:
 
@@ -23,7 +23,7 @@ It consists of three parts separated by a semicolon:
 -   `TZ=Asia/Tokyo` is optional and for time zone using name in [IANA Time Zone database](https://www.iana.org/time-zones);
 -   `0 0 1 1 *` is a cron expression representing the beginning of the time range.
 
-## Usage
+## Installation
 
 To download the package:
 
@@ -31,7 +31,9 @@ To download the package:
 go get -u github.com/1set/cronrange
 ```
 
-And import it in your program as:
+## Usage
+
+To import it in your program as:
 
 ```go
 import "github.com/1set/cronrange"
