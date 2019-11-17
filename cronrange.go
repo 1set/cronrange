@@ -30,7 +30,8 @@ type TimeRange struct {
 	End   time.Time
 }
 
-// New returns a CronRange instance with given config, timeZone can be empty for local time zone.
+// New returns a CronRange instance with given config, time zone can be empty for local time zone.
+// It returns an error if duration is not positive number, or cron expression is invalid, or time zone doesn't exist.
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
 	// Precondition check
 	if durationMin == 0 {
