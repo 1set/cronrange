@@ -143,11 +143,13 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotOccurs, err := tt.cr.NextOccurrences(tt.args.t, tt.args.count)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NextOccurrences() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			defer func() {
+				if r := recover(); (r != nil) != tt.wantErr {
+					t.Errorf("NextOccurrences() panic = %v, wantErr %v", r, tt.wantErr)
+				}
+			}()
+
+			gotOccurs := tt.cr.NextOccurrences(tt.args.t, tt.args.count)
 			if !isTimeRangeSliceEqual(gotOccurs, tt.wantOccurs) {
 				t.Errorf("NextOccurrences() gotOccurs = %v, want %v", gotOccurs, tt.wantOccurs)
 			}
@@ -157,7 +159,7 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 
 func BenchmarkCronRange_NextOccurrences(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = crEvery10MinBangkok.NextOccurrences(firstSec2019Local, 10)
+		_ = crEvery10MinBangkok.NextOccurrences(firstSec2019Local, 10)
 	}
 }
 
@@ -207,6 +209,12 @@ func TestCronRange_IsWithin(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				if r := recover(); (r != nil) != tt.wantErr {
+					t.Errorf("IsWithin() panic = %v, wantErr %v", r, tt.wantErr)
+				}
+			}()
+
 			var cr *CronRange
 			switch {
 			case tt.crExpr == "nil":
@@ -221,11 +229,7 @@ func TestCronRange_IsWithin(t *testing.T) {
 				}
 			}
 
-			gotWithin, err := cr.IsWithin(tt.t)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("IsWithin() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			gotWithin := cr.IsWithin(tt.t)
 			if gotWithin != tt.wantWithin {
 				t.Errorf("IsWithin() gotWithin = %v, want %v", gotWithin, tt.wantWithin)
 			}
@@ -235,6 +239,6 @@ func TestCronRange_IsWithin(t *testing.T) {
 
 func BenchmarkCronRange_IsWithin(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = crEvery10MinBangkok.IsWithin(firstSec2019Bangkok)
+		_ = crEvery10MinBangkok.IsWithin(firstSec2019Bangkok)
 	}
 }

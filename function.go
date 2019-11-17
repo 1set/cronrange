@@ -1,29 +1,26 @@
 package cronrange
 
 import (
-	"errors"
 	"time"
 )
 
-var (
-	errZeroOrNegCount   = errors.New("count should be positive")
-	errNilCronRange     = errors.New("nil CronRange instance")
-	errInvalidCronRange = errors.New("invalid CronRange instance")
-)
+func (cr *CronRange) checkPrecondition() {
+	switch {
+	case cr == nil:
+		panic("CronRange is nil")
+	case cr.duration <= 0:
+		panic("duration of CronRange is not positive")
+	case cr.schedule == nil:
+		panic("schedule of CronRange is nil")
+	}
+}
 
 // NextOccurrences returns the next occurrence time ranges, later than the given time.
-func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange, err error) {
-	// Precondition checks
-	switch {
-	case count <= 0:
-		err = errZeroOrNegCount
-	case cr == nil:
-		err = errNilCronRange
-	case cr.schedule == nil, cr.duration <= 0:
-		err = errInvalidCronRange
-	}
-	if err != nil {
-		return
+// It panics if count is less than one, or the CronRange instance is nil or incomplete.
+func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange) {
+	cr.checkPrecondition()
+	if count <= 0 {
+		panic("count is not positive")
 	}
 
 	for curr, i := t, 0; i < count; i++ {
@@ -44,16 +41,11 @@ func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange
 }
 
 // IsWithin checks if the given time falls within any time range represented by the expression.
-func (cr *CronRange) IsWithin(t time.Time) (within bool, err error) {
-	within = false
-	if cr == nil {
-		err = errNilCronRange
-		return
-	} else if cr.schedule == nil || cr.duration < 0 {
-		err = errInvalidCronRange
-		return
-	}
+// It panics if the CronRange instance is nil or incomplete.
+func (cr *CronRange) IsWithin(t time.Time) (within bool) {
+	cr.checkPrecondition()
 
+	within = false
 	searchStart := t.Add(-(cr.duration + 1*time.Second))
 	rangeStart := cr.schedule.Next(searchStart)
 	rangeEnd := rangeStart.Add(cr.duration)
