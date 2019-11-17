@@ -16,6 +16,7 @@ func (cr *CronRange) checkPrecondition() {
 }
 
 // NextOccurrences returns the next occurrence time ranges, later than the given time.
+//
 // It panics if count is less than one, or the CronRange instance is nil or incomplete.
 func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange) {
 	cr.checkPrecondition()
@@ -41,6 +42,7 @@ func (cr *CronRange) NextOccurrences(t time.Time, count int) (occurs []TimeRange
 }
 
 // IsWithin checks if the given time falls within any time range represented by the expression.
+//
 // It panics if the CronRange instance is nil or incomplete.
 func (cr *CronRange) IsWithin(t time.Time) (within bool) {
 	cr.checkPrecondition()

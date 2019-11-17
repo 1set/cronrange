@@ -42,7 +42,7 @@ func (cr CronRange) String() string {
 	return sb.String()
 }
 
-// ParseString attempts to deserialize the given expression or return failure.
+// ParseString attempts to deserialize the given expression or return failure if any parsing errors occur.
 func ParseString(s string) (cr *CronRange, err error) {
 	if len(s) == 0 {
 		err = errEmptyExpr
