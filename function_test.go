@@ -29,6 +29,12 @@ func TestCronRange_NextOccurrences(t *testing.T) {
 			nil,
 			true,
 		},
+		{"Incomplete struct",
+			crIncomplete,
+			args{firstSec2019Local, 1},
+			nil,
+			true,
+		},
 		{"Zero count",
 			crFirstDayEachMonth,
 			args{firstSec2019Local, 0},
@@ -173,6 +179,7 @@ func TestCronRange_IsWithin(t *testing.T) {
 	}{
 		{"Nil instance", "nil", parseLocalTime("2019-01-01 01:00:30"), false, true},
 		{"Empty instance", "empty", parseLocalTime("2019-01-01 01:00:30"), false, true},
+		{"Incomplete instance", "incomplete", parseLocalTime("2019-01-01 01:00:30"), false, true},
 		{"Every 3rd minute - in", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 01:00:30"), true, false},
 		{"Every 3rd minute - out1", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 01:02:00"), false, false},
 		{"Every 3rd minute - out2", "DR=1; */3 * * * *", parseLocalTime("2019-01-01 00:59:59"), false, false},
@@ -218,9 +225,11 @@ func TestCronRange_IsWithin(t *testing.T) {
 			var cr *CronRange
 			switch {
 			case tt.crExpr == "nil":
-				cr = nil
+				cr = crNil
 			case tt.crExpr == "empty":
-				cr = &CronRange{}
+				cr = crEmpty
+			case tt.crExpr == "incomplete":
+				cr = crIncomplete
 			default:
 				var err error
 				if cr, err = ParseString(tt.crExpr); err != nil {
