@@ -166,7 +166,7 @@ func BenchmarkCronRange_MarshalJSON(b *testing.B) {
 	}
 }
 
-func TestCronRange_UnmarshalJSON(t *testing.T) {
+func TestCronRange_UnmarshalJSON_Normal(t *testing.T) {
 	jsonPrefix, jsonSuffix := `{"CR":"`, `","Name":"Demo","Value":2222}`
 	for _, tt := range deserializeTestCases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -200,7 +200,14 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 				t.Errorf("UnmarshalJSON() with instance gotCr: %s, want: %s", gotSI.CR.String(), tt.wantS)
 				return
 			}
+		})
+	}
+}
 
+func TestCronRange_UnmarshalJSON_Broken(t *testing.T) {
+	jsonPrefix, jsonSuffix := `{"CR":"`, `","Name":"Demo","Value":2222}`
+	for _, tt := range deserializeTestCases {
+		t.Run(tt.name, func(t *testing.T) {
 			jsonBrokens := []string{
 				jsonPrefix[0:len(jsonPrefix)-1] + tt.inputS + jsonSuffix[1:len(jsonSuffix)-1],
 				jsonPrefix[0:len(jsonPrefix)-1] + tt.inputS + jsonSuffix,
@@ -218,18 +225,24 @@ func TestCronRange_UnmarshalJSON(t *testing.T) {
 			}
 			for _, jsonBroken := range jsonBrokens {
 				var gotSP tempTestWithPointer
-				if err = json.Unmarshal([]byte(jsonBroken), &gotSP); err == nil {
+				if err := json.Unmarshal([]byte(jsonBroken), &gotSP); err == nil {
 					t.Errorf("UnmarshalJSON() with pointer missing error for broken json: %s", jsonBroken)
 					return
 				}
 
 				var gotSI tempTestWithInstance
-				if err = json.Unmarshal([]byte(jsonBroken), &gotSI); err == nil {
+				if err := json.Unmarshal([]byte(jsonBroken), &gotSI); err == nil {
 					t.Errorf("UnmarshalJSON() with instance missing error for broken json: %s", jsonBroken)
 					return
 				}
 			}
+		})
+	}
+}
 
+func TestCronRange_UnmarshalJSON_Direct(t *testing.T) {
+	for _, tt := range deserializeTestCases {
+		t.Run(tt.name, func(t *testing.T) {
 			directExprs := []string{
 				`"` + tt.inputS + `"`,
 				tt.inputS,
