@@ -47,3 +47,21 @@ func BenchmarkNew(b *testing.B) {
 		_, _ = New(exprEveryMin, timeZoneBangkok, 10)
 	}
 }
+
+func BenchmarkCronRange_Duration(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = crEveryNewYearsDayBangkok.Duration()
+	}
+}
+
+func BenchmarkCronRange_TimeZone(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = crEveryNewYearsDayBangkok.TimeZone()
+	}
+}
+
+func BenchmarkCronRange_CronExpression(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = crEveryNewYearsDayBangkok.CronExpression()
+	}
+}
