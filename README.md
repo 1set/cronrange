@@ -9,7 +9,7 @@
 
 cronrange is a Go package for _time range expression_ in _Cron_ style.
 
-In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic time ranges, i.e. **Cron** for Time**Range**. And it made easier to tell if the moment falls within the any time ranges, and what's the next occurrence.
+In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic time ranges, i.e. **Cron** for Time**Range**. And it made easier to tell if the moment falls within the any time ranges (use [IsWithin()](https://godoc.org/github.com/1set/cronrange#CronRange.IsWithin) method), and what's the next occurrence (use [NextOccurrences()](https://godoc.org/github.com/1set/cronrange#CronRange.NextOccurrences) method).
 
 For example, every New Year's Day in Tokyo can be written as:
 
