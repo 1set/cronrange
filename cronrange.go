@@ -65,3 +65,21 @@ func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err erro
 	}
 	return
 }
+
+// Duration returns the duration of the CronRange.
+func (cr *CronRange) Duration() time.Duration {
+	cr.checkPrecondition()
+	return cr.duration
+}
+
+// TimeZone returns the time zone string of the CronRange.
+func (cr *CronRange) TimeZone() string {
+	cr.checkPrecondition()
+	return cr.timeZone
+}
+
+// CronExpression returns the Cron expression of the CronRange.
+func (cr *CronRange) CronExpression() string {
+	cr.checkPrecondition()
+	return cr.cronExpression
+}

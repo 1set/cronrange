@@ -2,7 +2,8 @@
 Package cronrange parses Cron-style time range expressions.
 
 In a nutshell, CronRange expression is a combination of Cron expression and time duration to represent periodic time ranges.
-And it made easier to figure out if the moment falls within the any time ranges, and what's the next occurrence.
+And it made easier to figure out if the moment falls within the any time ranges with the IsWithin() method, and what's the next
+occurrence with the NextOccurrences() method.
 
 For example, every New Year's Day in Tokyo can be written as:
 
