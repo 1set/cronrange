@@ -60,8 +60,7 @@ func ParseString(s string, opts ...ParseOpt) (cr *CronRange, err error) {
 	var defaultDuration *time.Duration = nil
 
 	for _, opt := range opts {
-		switch opt := opt.(type) {
-		case DefaultDuration:
+		if opt, ok := opt.(DefaultDuration); ok {
 			duration := time.Duration(opt)
 			defaultDuration = &duration
 		}
