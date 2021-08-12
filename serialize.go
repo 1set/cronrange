@@ -44,7 +44,7 @@ func (cr CronRange) String() string {
 
 // ParseString attempts to deserialize the given expression or return failure if any parsing errors occur.
 func ParseString(s string) (cr *CronRange, err error) {
-	if len(s) == 0 {
+	if s == "" {
 		err = errEmptyExpr
 		return
 	}
@@ -64,7 +64,7 @@ PL:
 	for idx, part := range parts {
 		part = strings.TrimSpace(part)
 		// skip empty part
-		if len(part) == 0 {
+		if part == "" {
 			continue
 		}
 
@@ -97,7 +97,7 @@ PL:
 // MarshalJSON implements the encoding/json.Marshaler interface for serialization of CronRange.
 func (cr CronRange) MarshalJSON() ([]byte, error) {
 	expr := cr.String()
-	if len(expr) == 0 {
+	if expr == "" {
 		return []byte("null"), nil
 	}
 	return json.Marshal(expr)
@@ -107,7 +107,7 @@ func (cr CronRange) MarshalJSON() ([]byte, error) {
 func (cr *CronRange) UnmarshalJSON(b []byte) (err error) {
 	// Precondition checks
 	raw := string(b)
-	if len(raw) == 0 {
+	if raw == "" {
 		return errEmptyExpr
 	}
 	if !(strings.HasPrefix(raw, strDoubleQuotation) && strings.HasSuffix(raw, strDoubleQuotation) && len(raw) >= 2) {
