@@ -42,11 +42,28 @@ func (cr CronRange) String() string {
 	return sb.String()
 }
 
+// ParseOpt Specifies an interface for parser opts
+type ParseOpt interface{}
+
+// DefaultDuration provides a fallback duration if the cron doesn't specify one. Duration must be 1 minute or greater
+type DefaultDuration time.Duration
+
 // ParseString attempts to deserialize the given expression or return failure if any parsing errors occur.
-func ParseString(s string) (cr *CronRange, err error) {
+// ParseOpts can include: DefaultDuration(1 * time.Minute) to set a duration. Must be greater than 1 minute. Units smaller
+// than a minute are truncated. using uint64 type conversation from duration.
+func ParseString(s string, opts ...ParseOpt) (cr *CronRange, err error) {
 	if s == "" {
 		err = errEmptyExpr
 		return
+	}
+
+	var defaultDuration *time.Duration = nil
+
+	for _, opt := range opts {
+		if opt, ok := opt.(DefaultDuration); ok {
+			duration := time.Duration(opt)
+			defaultDuration = &duration
+		}
 	}
 
 	var (
@@ -87,6 +104,8 @@ PL:
 	if err == nil {
 		if len(durStr) > 0 {
 			cr, err = New(cronExpr, timeZone, durMin)
+		} else if defaultDuration != nil {
+			cr, err = New(cronExpr, timeZone, uint64(*defaultDuration/time.Minute))
 		} else {
 			err = errMissDurationExpr
 		}

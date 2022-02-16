@@ -53,35 +53,45 @@ func BenchmarkCronRange_String(b *testing.B) {
 }
 
 var deserializeTestCases = []struct {
-	name    string
-	inputS  string
-	wantS   string
-	wantErr bool
+	name      string
+	inputS    string
+	wantS     string
+	wantErr   bool
+	inputOpts []ParseOpt
 }{
-	{"Empty string", emptyString, emptyString, true},
-	{"Invalid expression", "hello", emptyString, true},
-	{"Missing duration", "; * * * * *", emptyString, true},
-	{"Invalid duration=0", "DR=0;* * * * *", emptyString, true},
-	{"Invalid duration=-5", "DR=-5;* * * * *", emptyString, true},
-	{"Invalid with Mars time zone", "DR=5;TZ=Mars;* * * * *", emptyString, true},
-	{"Invalid with unknown part", "DR=10; TZ=Pacific/Honolulu; SET=1; * * * * *", emptyString, true},
-	{"Invalid with lower case", "dr=5;* * * * *", emptyString, true},
-	{"Invalid with wrong order", "* * * * *; DR=5;", emptyString, true},
-	{"Normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false},
-	{"Normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false},
-	{"Normal with empty parts", ";  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false},
-	{"Normal with different order", "TZ=Asia/Tokyo;  DR=1440;  0 0 1 1 *", "DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *", false},
-	{"Normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false},
-	{"Normal with UTC time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false},
-	{"Normal with Honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
-	{"Normal with Honolulu time zone in different order", "TZ=Pacific/Honolulu; DR=10; * * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false},
-	{"Normal with complicated expression", "DR=5258765;   TZ=Pacific/Honolulu;   4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", "DR=5258765; TZ=Pacific/Honolulu; 4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", false},
+	{"Empty string", emptyString, emptyString, true, nil},
+	{"Invalid expression", "hello", emptyString, true, nil},
+	{"Missing duration", "; * * * * *", emptyString, true, nil},
+	{"Missing duration default takes priority", "; * * * * *", "DR=1; * * * * *", false, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Missing duration default takes priority fails if invalid", "; * * * * *", emptyString, true, []ParseOpt{DefaultDuration(0 * time.Minute)}},
+	{"Invalid duration=0", "DR=0;* * * * *", emptyString, true, nil},
+	{"Invalid duration=0 default duration doesn't impact invalid durations", "DR=0;* * * * *", emptyString, true, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Invalid duration=-5", "DR=-5;* * * * *", emptyString, true, nil},
+	{"Invalid duration=-5 default doesn't override", "DR=-5;* * * * *", emptyString, true, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Invalid with Mars time zone", "DR=5;TZ=Mars;* * * * *", emptyString, true, nil},
+	{"Invalid with unknown part", "DR=10; TZ=Pacific/Honolulu; SET=1; * * * * *", emptyString, true, nil},
+	{"Invalid with lower case", "dr=5;* * * * *", emptyString, true, nil},
+	{"Invalid with lower case default duration overrides", "dr=5;* * * * *", "DR=1; * * * * *", true, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Invalid with wrong order", "* * * * *; DR=5;", emptyString, true, nil},
+	{"Invalid with wrong order fails even with default duration", "* * * * *; DR=5;", emptyString, true, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Normal without timezone", "DR=5;* * * * *", "DR=5; * * * * *", false, nil},
+	{"Normal with extra whitespaces", "  DR=6 ;  * * * * *  ", "DR=6; * * * * *", false, nil},
+	{"Normal with double duration", "DR=6;DR=7; * * * * *  ", "DR=7; * * * * *", false, nil},
+	{"Normal with empty parts", ";  DR=7;;; ;; ;; ;* * * * *  ", "DR=7; * * * * *", false, nil},
+	{"Normal with different order", "TZ=Asia/Tokyo;  DR=1440;  0 0 1 1 *", "DR=1440; TZ=Asia/Tokyo; 0 0 1 1 *", false, nil},
+	{"Normal with local time zone", "DR=8;TZ=Local;* * * * *", "DR=8; * * * * *", false, nil},
+	{"Normal with UTC time zone", "DR=9;TZ=Etc/UTC;* * * * *", "DR=9; TZ=Etc/UTC; * * * * *", false, nil},
+	{"Normal with local time zone default duration works with tz", "TZ=Local;* * * * *", "DR=1; * * * * *", false, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Normal with UTC time zone default duration works with tz", "TZ=Etc/UTC;* * * * *", "DR=1; TZ=Etc/UTC; * * * * *", false, []ParseOpt{DefaultDuration(1 * time.Minute)}},
+	{"Normal with Honolulu time zone", "DR=10;TZ=Pacific/Honolulu;* * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false, nil},
+	{"Normal with Honolulu time zone in different order", "TZ=Pacific/Honolulu; DR=10; * * * * *", "DR=10; TZ=Pacific/Honolulu; * * * * *", false, nil},
+	{"Normal with complicated expression", "DR=5258765;   TZ=Pacific/Honolulu;   4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", "DR=5258765; TZ=Pacific/Honolulu; 4,8,22,27,33,38,47,50 3,11,14-16,19,21,22 */10 1,3,5,6,9-11 1-5", false, nil},
 }
 
 func TestParseString(t *testing.T) {
 	for _, tt := range deserializeTestCases {
 		t.Run(tt.name, func(t *testing.T) {
-			gotCr, err := ParseString(tt.inputS)
+			gotCr, err := ParseString(tt.inputS, tt.inputOpts...)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseString() error: %v, wantErr: %v", err, tt.wantErr)
 				return
