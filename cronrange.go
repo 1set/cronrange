@@ -40,7 +40,7 @@ type TimeRange struct {
 //
 // It returns an error if duration is not positive number, or cron expression is invalid, or time zone doesn't exist.
 func New(cronExpr, timeZone string, durationMin uint64) (cr *CronRange, err error) {
-	cr, err = new(cronExpr, timeZone, time.Duration(durationMin)*time.Minute, cronParser)
+	cr, err = internalNew(cronExpr, timeZone, time.Duration(durationMin)*time.Minute, cronParser)
 	return
 }
 
@@ -62,22 +62,22 @@ func (cr *CronRange) CronExpression() string {
 	return cr.cronExpression
 }
 
-func new(cronExpr, timeZone string, dur time.Duration, cp cron.Parser) (cr *CronRange, err error) {
+func internalNew(cronExpr, tz string, td time.Duration, cp cron.Parser) (cr *CronRange, err error) {
 	// Precondition check
-	if dur <= 0 {
+	if td <= 0 {
 		err = errZeroDuration
 		return
 	}
 
 	// Clean up string parameters
-	cronExpr, timeZone = strings.TrimSpace(cronExpr), strings.TrimSpace(timeZone)
+	cronExpr, tz = strings.TrimSpace(cronExpr), strings.TrimSpace(tz)
 
 	// Append time zone into cron spec if necessary
 	cronSpec := cronExpr
-	if strings.ToLower(timeZone) == "local" {
-		timeZone = ""
-	} else if len(timeZone) > 0 {
-		cronSpec = fmt.Sprintf("CRON_TZ=%s %s", timeZone, cronExpr)
+	if strings.ToLower(tz) == "local" {
+		tz = ""
+	} else if len(tz) > 0 {
+		cronSpec = fmt.Sprintf("CRON_TZ=%s %s", tz, cronExpr)
 	}
 
 	// Validate & retrieve crontab schedule
@@ -88,8 +88,8 @@ func new(cronExpr, timeZone string, dur time.Duration, cp cron.Parser) (cr *Cron
 
 	cr = &CronRange{
 		cronExpression: cronExpr,
-		timeZone:       timeZone,
-		duration:       dur,
+		timeZone:       tz,
+		duration:       td,
 		schedule:       schedule,
 	}
 	return
@@ -99,7 +99,7 @@ func new(cronExpr, timeZone string, dur time.Duration, cp cron.Parser) (cr *Cron
 //
 // It returns an error if duration is not positive number, or cron expression is invalid, or time zone doesn't exist.
 func Create(cronExpr, timeZone string, duration time.Duration, cp cron.Parser) (cr *CronRange, err error) {
-	cr, err = new(cronExpr, timeZone, duration, cp)
+	cr, err = internalNew(cronExpr, timeZone, duration, cp)
 	if err == nil {
 		cr.version = Version2
 	}

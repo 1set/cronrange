@@ -50,11 +50,11 @@ func (cr CronRange) String() string {
 
 // ParseString attempts to deserialize the given expression or return failure if any parsing errors occur.
 func ParseString(s string) (cr *CronRange, err error) {
-	cr, err = parseString(s, cronParser)
+	cr, err = internalParseString(s, cronParser)
 	return
 }
 
-func parseString(s string, cp cron.Parser) (cr *CronRange, err error) {
+func internalParseString(s string, cp cron.Parser) (cr *CronRange, err error) {
 	if s == "" {
 		err = errEmptyExpr
 		return
@@ -110,7 +110,7 @@ PL:
 			if version == Version2 {
 				cr, err = Create(cronExpr, timeZone, duration, cp)
 			} else {
-				cr, err = new(cronExpr, timeZone, time.Duration(durMin)*time.Minute, cp)
+				cr, err = internalNew(cronExpr, timeZone, time.Duration(durMin)*time.Minute, cp)
 			}
 		} else {
 			err = errMissDurationExpr
@@ -120,7 +120,7 @@ PL:
 }
 
 func ParseStringWithCronParser(s string, cp cron.Parser) (cr *CronRange, err error) {
-	cr, err = parseString(s, cp)
+	cr, err = internalParseString(s, cp)
 	return
 }
 
