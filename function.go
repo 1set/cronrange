@@ -48,7 +48,7 @@ func (cr *CronRange) IsWithin(t time.Time) (within bool) {
 	cr.checkPrecondition()
 
 	within = false
-	searchStart := t.Add(-(cr.duration + 1*time.Second))
+	searchStart := t.Add(-(cr.duration + 1*time.Second - 1*time.Nanosecond))
 	rangeStart := cr.schedule.Next(searchStart)
 	rangeEnd := rangeStart.Add(cr.duration)
 

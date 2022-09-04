@@ -57,6 +57,8 @@ var (
 	crThirdDayEachMonthHonolulu, _ = New("0 0 3 * *", timeZoneHonolulu, 1440)
 	crFirstHourFeb29, _            = New("0 0 29 2 *", "", 60)
 	crFirstHourFeb28OrSun, _       = New("0 0 28 2 0", "", 60)
+	crEvery1MinV2, _               = Create(exprEveryMin, emptyString, time.Minute*1, cronParser)
+	crEveryNewYearsDayTokyoV2, _   = Create(exprEveryNewYear, timeZoneTokyo, time.Hour*24, cronParser)
 )
 
 type tempTestWithPointer struct {

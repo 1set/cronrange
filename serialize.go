@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 var (
@@ -28,7 +30,11 @@ func (cr CronRange) String() string {
 	sb.Grow(36)
 	if cr.duration > 0 {
 		sb.WriteString(strMarkDuration)
-		sb.WriteString(strconv.FormatUint(uint64(cr.duration/time.Minute), 10))
+		if cr.version == Version2 {
+			sb.WriteString(cr.duration.String())
+		} else {
+			sb.WriteString(strconv.FormatUint(uint64(cr.duration/time.Minute), 10))
+		}
 		sb.WriteString(strSemicolon)
 		sb.WriteString(strSingleWhitespace)
 	}
@@ -44,6 +50,11 @@ func (cr CronRange) String() string {
 
 // ParseString attempts to deserialize the given expression or return failure if any parsing errors occur.
 func ParseString(s string) (cr *CronRange, err error) {
+	cr, err = internalParseString(s, cronParser)
+	return
+}
+
+func internalParseString(s string, cp cron.Parser) (cr *CronRange, err error) {
 	if s == "" {
 		err = errEmptyExpr
 		return
@@ -54,6 +65,8 @@ func ParseString(s string) (cr *CronRange, err error) {
 		durMin                     uint64
 		parts                      = strings.Split(s, strSemicolon)
 		idxExpr                    = len(parts) - 1
+		version                    int
+		duration                   time.Duration
 	)
 	if idxExpr == 0 {
 		err = errIncompleteExpr
@@ -74,8 +87,16 @@ PL:
 			cronExpr = part
 		case strings.HasPrefix(part, strMarkDuration):
 			durStr = part[len(strMarkDuration):]
+			if duration, err = time.ParseDuration(durStr); err == nil {
+				if duration > 0 {
+					version = Version2
+				}
+			}
 			if durMin, err = strconv.ParseUint(durStr, 10, 64); err != nil {
-				break PL
+				if version != Version2 {
+					break PL
+				}
+				err = nil
 			}
 		case strings.HasPrefix(part, strMarkTimeZone):
 			timeZone = part[len(strMarkTimeZone):]
@@ -86,11 +107,20 @@ PL:
 
 	if err == nil {
 		if len(durStr) > 0 {
-			cr, err = New(cronExpr, timeZone, durMin)
+			if version == Version2 {
+				cr, err = Create(cronExpr, timeZone, duration, cp)
+			} else {
+				cr, err = internalNew(cronExpr, timeZone, time.Duration(durMin)*time.Minute, cp)
+			}
 		} else {
 			err = errMissDurationExpr
 		}
 	}
+	return
+}
+
+func ParseStringWithCronParser(s string, cp cron.Parser) (cr *CronRange, err error) {
+	cr, err = internalParseString(s, cp)
 	return
 }
 
