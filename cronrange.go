@@ -62,9 +62,9 @@ func (cr *CronRange) CronExpression() string {
 	return cr.cronExpression
 }
 
-func new(cronExpr, timeZone string, duration time.Duration, cp cron.Parser) (cr *CronRange, err error) {
+func new(cronExpr, timeZone string, dur time.Duration, cp cron.Parser) (cr *CronRange, err error) {
 	// Precondition check
-	if duration <= 0 {
+	if dur <= 0 {
 		err = errZeroDuration
 		return
 	}
@@ -89,7 +89,7 @@ func new(cronExpr, timeZone string, duration time.Duration, cp cron.Parser) (cr 
 	cr = &CronRange{
 		cronExpression: cronExpr,
 		timeZone:       timeZone,
-		duration:       duration,
+		duration:       dur,
 		schedule:       schedule,
 	}
 	return

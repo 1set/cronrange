@@ -95,9 +95,8 @@ PL:
 			if durMin, err = strconv.ParseUint(durStr, 10, 64); err != nil {
 				if version != Version2 {
 					break PL
-				} else {
-					err = nil
 				}
+				err = nil
 			}
 		case strings.HasPrefix(part, strMarkTimeZone):
 			timeZone = part[len(strMarkTimeZone):]
@@ -121,7 +120,7 @@ PL:
 }
 
 func ParseStringWithCronParser(s string, cp cron.Parser) (cr *CronRange, err error) {
-	cr, err = parseString(s, cronParser)
+	cr, err = parseString(s, cp)
 	return
 }
 
