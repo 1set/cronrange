@@ -3,6 +3,8 @@ package cronrange
 import (
 	"testing"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 func TestNew(t *testing.T) {
@@ -32,6 +34,46 @@ func TestNew(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotCr, err := New(tt.args.cronExpr, tt.args.timeZone, tt.args.durationMin)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if (gotCr != nil) != tt.wantCr {
+				t.Errorf("New() gotCr = %v, wantCr %v", gotCr, tt.wantCr)
+			}
+		})
+	}
+}
+
+func TestCreate(t *testing.T) {
+	type args struct {
+		cronExpr    string
+		timeZone    string
+		durationMin uint64
+		duration    time.Duration
+		cp          cron.Parser
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantCr  bool
+		wantErr bool
+	}{
+		{"Empty cronExpr", args{emptyString, emptyString, 5, time.Minute * 5, cronParser}, false, true},
+		{"Invalid cronExpr", args{"h e l l o", emptyString, 5, time.Minute * 5, cronParser}, false, true},
+		{"Incomplete cronExpr", args{"* * * *", emptyString, 5, time.Minute * 5, cronParser}, false, true},
+		{"Nonexistent time zone", args{exprEveryMin, "Mars", 5, time.Minute * 5, cronParser}, false, true},
+		{"Zero durationMin", args{exprEveryMin, emptyString, 0, time.Minute * 0, cronParser}, false, true},
+		{"Normal without time zone", args{exprEveryMin, emptyString, 5, time.Minute * 5, cronParser}, true, false},
+		{"Normal with local time zone", args{exprEveryMin, " Local ", 5, time.Minute * 5, cronParser}, true, false},
+		{"Normal with 5 min in Bangkok", args{exprEveryMin, timeZoneBangkok, 5, time.Minute * 5, cronParser}, true, false},
+		{"Normal with 1 day in Tokyo", args{exprEveryNewYear, timeZoneTokyo, 1440, time.Minute * 1440, cronParser}, true, false},
+		{"Normal with large duration", args{exprEveryMin, timeZoneBangkok, 5259000, time.Minute * 5259000, cronParser}, true, false},
+		{"Normal with complicated cron expression", args{exprVeryComplicated, timeZoneHonolulu, 5258765, time.Minute * 5258765, cronParser}, true, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotCr, err := Create(tt.args.cronExpr, tt.args.timeZone, tt.args.duration, tt.args.cp)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("New() error = %v, wantErr %v", err, tt.wantErr)
 				return
